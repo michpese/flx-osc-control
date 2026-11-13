@@ -1,0 +1,15 @@
+[project]
+name = "zeros-osc"
+version = "0.1.0"
+description = "ZerOS-OSC-Befehle bauen, prüfen und senden; CLI flxctl"
+readme = "README.md"
+requires-python = ">=3.11"
+# Must not depend on any other package of this repository.
+dependencies = [
+    "python-osc>=1.9",
+    "PyYAML>=6.0",
+]
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"

@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Logs der Bridge und der mock-console
+*.log
+*.jsonl
+
+# Betriebssystem
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editoren
+.vscode/
+.idea/
+
+# Ableton Live
+Backup/
+*.asd
+Ableton Project Info/
+
+# Lokale Konfiguration, die nicht ins Repo gehört
+*.local.yaml
+.env
