@@ -234,3 +234,35 @@ def test_warnings():
     assert not any("vermutet" in w for w in forum)
     guessed = address_warnings(match_address("/zeros/blackout/1"))
     assert any("ungetestet" in w and "Status vermutet" in w for w in guessed)
+
+
+# --- absurd numbers must be rejected quickly, never expanded -------------------------
+
+
+@pytest.mark.parametrize(
+    "address",
+    [
+        "/zeros/cue/go/1e5000/1",
+        "/zeros/cue/go/1e9999999/1",
+        "/zeros/cue/go/1/1e9999999",
+        "/zeros/cue/go/1/1e-9999999",
+        "/zeros/playback/level/1/1e9999999",
+        "/zeros/cue/go/1/" + "9" * 5000,
+    ],
+)
+def test_huge_numbers_are_rejected_without_expanding(address):
+    import time
+
+    start = time.perf_counter()
+    with pytest.raises(ZerosValueError):
+        match_address(address)
+    assert time.perf_counter() - start < 1.0
+
+
+def test_builders_reject_huge_exponents():
+    from zeros_osc import cue_go
+
+    with pytest.raises(ZerosValueError):
+        cue_go("1e9999999", 1)
+    with pytest.raises(ZerosValueError):
+        cue_go(1, "1e-9999999")

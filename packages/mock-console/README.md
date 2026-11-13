@@ -27,7 +27,7 @@ Für die Bewertung werden Argumente als Pfadsegmente angehängt. Alle vier Forme
 | `/zeros/cue/go` | `"1"`, `"5"` |
 | `/zeros/cue/go` | `"1/5"` |
 
-Text- und Ganzzahl-Argumente gehen beide. Die Adresse muss danach in der Schreibweise vorliegen, die `zeros-osc` sendet: `/zeros/cue/go/1/05` wird nicht akzeptiert.
+Text- und Ganzzahl-Argumente gehen beide. Gleitkomma-Argumente werden auf sieben gültige Stellen gebracht, weil OSC sie mit 32 Bit überträgt: `5.0` zählt als `5`, ein Punkt-Cue `2.3` als `2.3`. Ein Level als Bruchteil zwischen 0.0 und 1.0 wird nicht umgerechnet und deshalb abgelehnt; diese Form steht in der Referenz nur als Vermutung. Die Adresse muss danach in der Schreibweise vorliegen, die `zeros-osc` sendet: `/zeros/cue/go/1/05` wird nicht akzeptiert.
 
 Zu jeder akzeptierten Nachricht steht der Status des Befehls aus der Referenz dabei: belegt, Forum oder vermutet. Bei „vermutet“ steht im Log ausdrücklich, dass die Attrappe die Schreibweise nur annimmt, weil sie in der Referenz steht, und dass das echte Pult sie ablehnen kann. Die Liste der Befehle und ihr Status kommen aus `zeros-osc`; dieses Paket hat keine eigene Kopie.
 

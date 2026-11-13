@@ -19,7 +19,7 @@ sources:
     midi_port: "LX Bridge"
     channel: 16
 
-# Dieselbe Note auf demselben Kanal löst innerhalb dieser Zeit nur einmal aus.
+# Dieselbe Note von derselben Quelle löst innerhalb dieser Zeit nur einmal aus.
 debounce_ms: 250
 
 # Notennummern werden nie neu vergeben. Neue Einträge bekommen neue Nummern.

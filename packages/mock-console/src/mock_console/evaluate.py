@@ -78,7 +78,9 @@ def _arg_segment(arg: object) -> str | None:
     if isinstance(arg, int) and not isinstance(arg, bool):
         return str(arg)
     if isinstance(arg, float):
-        return str(arg)
+        # OSC floats are 32 bit: 2.3 arrives as 2.299999952316284 and 5.0 would
+        # print as "5.0". Seven significant digits give back what was sent.
+        return format(arg, ".7g")
     return None
 
 
@@ -174,10 +176,7 @@ def evaluate_packet(data: bytes) -> list[ParsedMessage]:
             return _parse_bundle(data, None)
         return [_parse_message(data, None)]
     except (ParseError, struct.error, UnicodeDecodeError) as exc:
-        return [
-            ParsedMessage(
-                address="",
-                args=(),
-                verdict=_ignored(Reason.INVALID, f"kein gültiges OSC-Paket: {exc}"),
-            )
-        ]
+        detail = f"kein gültiges OSC-Paket: {exc}"
+    except Exception as exc:  # a packet must never kill the receiver
+        detail = f"Paket nicht auswertbar: {type(exc).__name__}: {exc}"
+    return [ParsedMessage(address="", args=(), verdict=_ignored(Reason.INVALID, detail))]

@@ -51,8 +51,8 @@ Die Zuordnung von MIDI-Note zu OSC-Befehl steht in genau einer Datei je Show. Vo
 | `console.port` | Zahl | ja | OSC-Port des Pults, Standard 8830 |
 | `console.transport` | `udp` oder `tcp-slip` | ja | muss zur Einstellung am Pult passen |
 | `sources.<name>.midi_port` | Text | ja | Name des MIDI-Eingangs, zum Beispiel „LX Bridge" |
-| `sources.<name>.channel` | 1–16 | ja | MIDI-Kanal dieser Quelle |
-| `debounce_ms` | Zahl | nein | Sperrzeit für Wiederholungen derselben Note, Standard 250 |
+| `sources.<name>.channel` | 1–16 | ja | MIDI-Kanal dieser Quelle; die Kombination aus `midi_port` und `channel` darf nur einmal vorkommen |
+| `debounce_ms` | endliche Zahl ab 0 | nein | Sperrzeit für Wiederholungen derselben Note von derselben Quelle, Standard 250 |
 | `cues[].note` | 0–127 | ja | MIDI-Note; jede Note höchstens einmal |
 | `cues[].name` | Text | ja | Name für Log und Spickzettel |
 | `cues[].osc` | Text | ja | OSC-Adresse aus [02-flx-osc-referenz.md](02-flx-osc-referenz.md) |

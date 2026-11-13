@@ -13,6 +13,7 @@ the packet left this computer.
 
 from __future__ import annotations
 
+import select
 import socket
 from typing import Protocol
 
@@ -66,6 +67,9 @@ def slip_decode(frame: bytes) -> bytes:
             escaped = False
         elif byte == SLIP_ESC:
             escaped = True
+        elif byte == SLIP_END:
+            # END inside the body means two frames or a damaged one.
+            raise ValueError("unescaped SLIP END inside frame")
         else:
             out.append(byte)
     if escaped:
@@ -112,8 +116,12 @@ class UdpClient:
 class TcpSlipClient:
     """Send OSC over TCP with SLIP framing.
 
-    Connects on the first send. If the connection broke, the next send
-    reconnects once before giving up with ``OSError``.
+    Connects on the first send. Before each send it checks whether the peer
+    has closed the connection (console restarted, OSC switched off and on)
+    and reconnects first; otherwise the first message after such a close
+    would be accepted by the operating system and lost without an error.
+    If sending on an existing connection fails, it reconnects once. A failed
+    connection attempt is not repeated, so one send waits at most one timeout.
     """
 
     transport = "tcp-slip"
@@ -132,12 +140,28 @@ class TcpSlipClient:
     def send(self, address: str) -> bytes:
         """Send ``address``; returns the SLIP frame that was sent."""
         frame = slip_encode(encode_message(address))
+        if self._sock is not None and self._peer_closed(self._sock):
+            self.close()
+        had_connection = self._sock is not None
         try:
             self._connect().sendall(frame)
         except OSError:
             self.close()
+            if not had_connection:
+                raise  # connecting failed; a second attempt would double the wait
             self._connect().sendall(frame)
         return frame
+
+    @staticmethod
+    def _peer_closed(sock: socket.socket) -> bool:
+        """True if the peer closed or reset the connection (no data is consumed)."""
+        try:
+            readable, _, _ = select.select([sock], [], [], 0)
+            if not readable:
+                return False
+            return sock.recv(1, socket.MSG_PEEK) == b""
+        except (OSError, ValueError):
+            return True
 
     def close(self) -> None:
         if self._sock is not None:

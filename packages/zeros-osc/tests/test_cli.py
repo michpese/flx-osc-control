@@ -244,3 +244,104 @@ def test_map_doc_refuses_broken_mapping(tmp_path):
     assert code == 1
     assert out == ""
     assert "Kein Spickzettel" in err
+
+
+# --- files and targets that used to end in a traceback --------------------------------
+
+CP1252_MAPPING = VALID_MAPPING.replace("Einlass", "Musik kräftig").encode("cp1252")
+
+
+def _run(argv):
+    out, err = io.StringIO(), io.StringIO()
+    code = main(argv, out=out, err=err)
+    return code, out.getvalue(), err.getvalue()
+
+
+def test_map_check_reports_non_utf8_file(tmp_path):
+    path = tmp_path / "mapping.yaml"
+    path.write_bytes(CP1252_MAPPING)
+    code, out, _ = _run(["map", "check", str(path)])
+    assert code == 1
+    assert "nicht als UTF-8 gespeichert" in out
+
+
+def test_map_doc_reports_non_utf8_file(tmp_path):
+    path = tmp_path / "mapping.yaml"
+    path.write_bytes(CP1252_MAPPING)
+    code, _, err = _run(["map", "doc", str(path)])
+    assert code == 1
+    assert "nicht als UTF-8 gespeichert" in err
+
+
+def test_config_reports_non_utf8_file(tmp_path):
+    path = tmp_path / "mapping.yaml"
+    path.write_bytes(CP1252_MAPPING)
+    code, _, err = _run(["--config", str(path), "cue", "go", "10", "1"])
+    assert code == 2
+    assert "nicht als UTF-8 gespeichert" in err
+
+
+def test_map_doc_reports_unwritable_output(tmp_path):
+    path = tmp_path / "mapping.yaml"
+    path.write_text(VALID_MAPPING, encoding="utf-8")
+    target = tmp_path / "gibt" / "es" / "nicht" / "spick.md"
+    code, _, err = _run(["map", "doc", str(path), "-o", str(target)])
+    assert code == 1
+    assert "nicht schreibbar" in err
+
+
+@pytest.mark.parametrize("port", ["70000", "0", "-1"])
+@pytest.mark.parametrize("extra", [[], ["--dry-run"]])
+def test_port_out_of_range_is_an_error_even_in_dry_run(port, extra):
+    argv = ["--host", "127.0.0.1", f"--port={port}", "cue", "go", "10", "2", *extra]
+    code, out, err = _run(argv)
+    assert code == 2
+    assert "port muss eine ganze Zahl von 1 bis 65535 sein" in err
+    assert out == ""
+
+
+@pytest.mark.parametrize(
+    "console",
+    [
+        'console: {host: 127.0.0.1, port: "8830", transport: udp}',
+        "console: {host: 123, port: 8830, transport: udp}",
+        "console: {host: 127.0.0.1, port: 8830.5, transport: udp}",
+        "console: {host: 127.0.0.1, port: true, transport: udp}",
+    ],
+)
+def test_config_with_wrong_types_is_an_error(tmp_path, console):
+    path = tmp_path / "mapping.yaml"
+    path.write_text(console + "\n", encoding="utf-8")
+    code, _, err = _run(["--config", str(path), "cue", "go", "10", "1"])
+    assert code == 2
+    assert "Ziel:" in err
+
+
+def _check(text, tmp_path):
+    path = tmp_path / "mapping.yaml"
+    path.write_text(text, encoding="utf-8")
+    return _run(["map", "check", str(path)])
+
+
+@pytest.mark.parametrize("value", [".inf", "-.inf", ".nan"])
+def test_map_check_rejects_non_finite_debounce(tmp_path, value):
+    code, out, _ = _check(VALID_MAPPING + f"debounce_ms: {value}\n", tmp_path)
+    assert code == 1
+    assert "debounce_ms muss eine endliche Zahl ab 0 sein" in out
+
+
+def test_map_check_rejects_two_sources_on_same_port_and_channel(tmp_path):
+    text = VALID_MAPPING.replace("channel: 16", "channel: 15")
+    code, out, _ = _check(text, tmp_path)
+    assert code == 1
+    assert "gleicher midi_port und channel wie sources.propresenter" in out
+
+
+def test_map_check_rejects_surrounding_spaces(tmp_path):
+    text = VALID_MAPPING.replace("host: 127.0.0.1", 'host: " 127.0.0.1 "').replace(
+        'ableton: {midi_port: "LX Bridge"', 'ableton: {midi_port: " LX Bridge"'
+    )
+    code, out, _ = _check(text, tmp_path)
+    assert code == 1
+    assert "console.host hat Leerzeichen" in out
+    assert "sources.ableton.midi_port hat Leerzeichen" in out
