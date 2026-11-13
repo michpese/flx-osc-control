@@ -57,7 +57,7 @@ Beispiel für ein Steuer-Playback:
 
 ## Virtueller MIDI-Port auf den Rechnern
 
-Der Port heißt auf jedem Rechner „LX Bridge".
+Der Port heißt auf jedem Rechner „LX Bridge". Das System zeigt ihn aber unterschiedlich an: unter Windows etwa als `LX Bridge 1`, am Mac etwa als `IAC-Treiber LX Bridge`. Welcher Name gilt, zeigt `uv run midi-bridge --list-ports`. Am Mac gehört dieser angezeigte Name in die `mapping.yaml`; Einzelheiten stehen im [README der midi-bridge](../packages/midi-bridge/README.md).
 
 **macOS** (Ableton-Rechner)
 
