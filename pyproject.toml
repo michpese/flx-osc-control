@@ -37,4 +37,5 @@ select = ["E", "F", "W", "I", "B", "UP"]
 [tool.pytest.ini_options]
 testpaths = ["packages", "tests"]
 # Each package has its own tests/ folder without __init__.py.
-addopts = "--import-mode=importlib"
+# -rs: show why tests were skipped (e.g. no virtual MIDI port on Windows).
+addopts = "--import-mode=importlib -rs"

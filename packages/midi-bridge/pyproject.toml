@@ -11,6 +11,9 @@ dependencies = [
     "PyYAML>=6.0",
 ]
 
+[project.scripts]
+midi-bridge = "midi_bridge.cli:main"
+
 [tool.uv.sources]
 zeros-osc = { workspace = true }
 
