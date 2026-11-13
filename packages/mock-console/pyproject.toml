@@ -9,6 +9,12 @@ dependencies = [
     "python-osc>=1.9",
 ]
 
+[project.scripts]
+mock-console = "mock_console.cli:main"
+
+[project.entry-points.pytest11]
+mock_console = "mock_console.pytest_plugin"
+
 [tool.uv.sources]
 zeros-osc = { workspace = true }
 

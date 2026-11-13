@@ -2,7 +2,7 @@
 
 Lichtstimmungen auf einem **Zero 88 FLX S24** aus **ProPresenter** und **Ableton Live** auslösen – über MIDI-Noten, eine kleine Bridge und OSC (Open Sound Control).
 
-> **Stand:** Konzept und Dokumentation stehen. `zeros-osc` mit der Kommandozeile `flxctl` ist gebaut, am Pult aber noch nicht getestet. `mock-console` und `midi-bridge` fehlen noch; die Bauaufträge liegen unter [`prompts/`](prompts/README.md).
+> **Stand:** Konzept und Dokumentation stehen. `zeros-osc` mit der Kommandozeile `flxctl` ist gebaut, am Pult aber noch nicht getestet. `mock-console` ist gebaut. `midi-bridge` fehlt noch; die Bauaufträge liegen unter [`prompts/`](prompts/README.md).
 
 ## So funktioniert es
 
@@ -50,7 +50,7 @@ Warum der Umweg über MIDI? Das Pult empfängt OSC, aber ProPresenter kann kein 
 | Paket | Aufgabe | Stand |
 | --- | --- | --- |
 | [`zeros-osc`](packages/zeros-osc/README.md) | ZerOS-Befehle bauen, prüfen und senden; Kommandozeile `flxctl` | 0.1.0, am Pult ungetestet |
-| [`mock-console`](packages/mock-console/README.md) | Pult-Attrappe für Tests ohne Hardware | geplant |
+| [`mock-console`](packages/mock-console/README.md) | Pult-Attrappe für Tests ohne Hardware | gebaut |
 | [`midi-bridge`](packages/midi-bridge/README.md) | MIDI-Note in OSC übersetzen | geplant |
 | `propresenter-watcher` | OSC aus der ProPresenter-API ableiten | optional, später |
 | Max-for-Live-Device „LX Cue Send" | OSC direkt aus Ableton | optional, später |
