@@ -20,7 +20,7 @@ Note Off, Note On mit Velocity 0 und alle anderen MIDI-Nachrichten werden ohne L
 | Dieselbe Note auf demselben Kanal innerhalb von `debounce_ms` | löst nur einmal aus, die Wiederholung steht als `entprellt` im Log. Gemessen wird mit dem Zeitpunkt des Empfangs, nicht der Verarbeitung |
 | Note beim Verarbeiten älter als 2 s, zum Beispiel weil das Senden hing | wird verworfen und nicht nachgesendet, Log: `verworfen: … s alt` |
 | MIDI-Port verschwindet | Log-Zeile, dann alle 2 s ein neuer Versuch, ohne Absturz. Weitere Fehlversuche stehen nicht im Log, erst wieder das erfolgreiche Öffnen |
-| `mapping.yaml` geändert | wird innerhalb einer Sekunde vollständig geprüft und übernommen, ohne Neustart. Ist die neue Datei fehlerhaft, bleibt die alte aktiv und das Log nennt jeden Fehler |
+| `mapping.yaml` geändert | wird innerhalb einer Sekunde erkannt, vollständig geprüft und übernommen, ohne Neustart. Erkannt wird jede Änderung am Inhalt, auch wenn Größe und Zeitstempel gleich bleiben. Ist die neue Datei fehlerhaft oder nicht als UTF-8 gespeichert, bleibt die alte aktiv und das Log nennt jeden Fehler einmal |
 | Senden scheitert, zum Beispiel weil das Netz fehlt | Log `FEHLER beim Senden`, die Bridge läuft weiter. Bei `tcp-slip` gilt ein Zeitlimit von 1 s je Verbindungsversuch |
 | Fehler beim Verarbeiten einer Nachricht | Log `FEHLER bei der Verarbeitung`, die nächste Note wird normal verarbeitet |
 | Verarbeitungs-Thread bricht trotzdem ab | Log `FEHLER: Verarbeitungs-Thread ist beendet … Licht von Hand fahren.`, die Bridge beendet sich mit Exit-Code 1 |

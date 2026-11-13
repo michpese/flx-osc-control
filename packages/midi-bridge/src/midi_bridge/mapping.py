@@ -8,7 +8,7 @@ reference with a single assignment.
 
 from __future__ import annotations
 
-import os
+import hashlib
 from dataclasses import dataclass
 from pathlib import Path
 from types import MappingProxyType
@@ -86,15 +86,24 @@ class LoadResult:
     mapping: Mapping | None
     errors: tuple[str, ...]
     warnings: tuple[str, ...]
+    signature: str | None = None  # content hash of the bytes that were checked
 
 
-def file_signature(path: str | Path) -> tuple[int, int] | None:
-    """(mtime_ns, size) of the file, or None if it cannot be read."""
+def content_signature(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
+
+
+def file_signature(path: str | Path) -> str | None:
+    """Hash of the file content, or None if it cannot be read.
+
+    The content is compared instead of mtime and size: a same-size edit can
+    keep the same mtime (coarse timestamps on Windows, FAT/exFAT sticks).
+    """
     try:
-        st = os.stat(path)
+        with open(path, "rb") as fh:
+            return content_signature(fh.read())
     except OSError:
         return None
-    return (st.st_mtime_ns, st.st_size)
 
 
 def _build(path: str, data: dict[str, Any], warnings: tuple[str, ...]) -> Mapping:
@@ -124,16 +133,23 @@ def _build(path: str, data: dict[str, Any], warnings: tuple[str, ...]) -> Mappin
 def load_mapping(path: str | Path) -> LoadResult:
     """Read, check completely and, only if there are no errors, build a Mapping.
 
-    The file is read once; check and build work on the same data.
+    The file is read once; hash, check and build work on the same bytes.
     """
     try:
-        data = zmapping.load(path)
+        with open(path, "rb") as fh:
+            raw = fh.read()
     except OSError as exc:
         return LoadResult(None, (f"Datei nicht lesbar: {exc}",), ())
+    signature = content_signature(raw)
+    try:
+        data = yaml.safe_load(raw.decode("utf-8"))
+    except UnicodeDecodeError as exc:
+        error = f"Datei ist nicht als UTF-8 gespeichert: {exc}"
+        return LoadResult(None, (error,), (), signature)
     except yaml.YAMLError as exc:
-        return LoadResult(None, (f"YAML-Fehler: {exc}",), ())
+        return LoadResult(None, (f"YAML-Fehler: {exc}",), (), signature)
     result = zmapping.check(data)
     warnings = tuple(result.warnings)
     if not result.ok:
-        return LoadResult(None, tuple(result.errors), warnings)
-    return LoadResult(_build(str(path), data, warnings), (), warnings)
+        return LoadResult(None, tuple(result.errors), warnings, signature)
+    return LoadResult(_build(str(path), data, warnings), (), warnings, signature)
