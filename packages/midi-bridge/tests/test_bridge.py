@@ -349,6 +349,32 @@ def test_worker_reads_mapping_once_per_message(
     assert second.path == "/zeros/cue/go/10/9"
 
 
+def test_reload_detects_same_size_edit_with_same_mtime(bridge, mapping_file, mock_console, h):
+    """Windows (coarse timestamps) and FAT sticks: mtime and size can stay equal."""
+    import os
+
+    before = os.stat(mapping_file)
+    new_text = h.mapping_text(mock_console.port, osc2="/zeros/cue/go/10/3")
+    mapping_file.write_text(new_text, encoding="utf-8")
+    os.utime(mapping_file, ns=(before.st_atime_ns, before.st_mtime_ns))
+    after = os.stat(mapping_file)
+    assert (after.st_size, after.st_mtime_ns) == (before.st_size, before.st_mtime_ns)
+    assert bridge.reload_mapping_if_changed() is True
+    assert bridge.mapping.cues[2].osc == "/zeros/cue/go/10/3"
+
+
+def test_reload_of_non_utf8_file_keeps_old_mapping(bridge, mapping_file, mock_console, caplog, h):
+    old = bridge.mapping
+    text = h.mapping_text(mock_console.port, name2="Musik kräftig")
+    mapping_file.write_bytes(text.encode("cp1252"))  # e.g. saved as ANSI on Windows
+    assert bridge.reload_mapping_if_changed() is False
+    assert bridge.mapping is old
+    assert h.wait_lines(caplog, "nicht als UTF-8 gespeichert")
+    assert bridge.reload_mapping_if_changed() is False  # reported once per change
+    assert len(h.wait_lines(caplog, "bleibt aktiv")) == 1
+    assert bridge.tick(force=True) is True  # the main loop survives
+
+
 def test_reload_through_tick(bridge, mapping_file, mock_console, caplog, h):
     bridge.mapping_poll_s = 0.0
     mapping_file.write_text(

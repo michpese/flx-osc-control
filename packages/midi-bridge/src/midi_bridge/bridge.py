@@ -190,11 +190,11 @@ class Bridge:
     def reload_mapping_if_changed(self) -> bool:
         """Load mapping.yaml again if it changed. Returns True if a new mapping is active."""
         path = self._mapping.path
-        signature = file_signature(path)
-        if signature == self._mapping_signature:
+        if file_signature(path) == self._mapping_signature:
             return False
-        self._mapping_signature = signature
         result = load_mapping(path)
+        # Remember what was checked, so a broken file is reported once per change.
+        self._mapping_signature = result.signature
         if result.mapping is None:
             self._status(
                 f"mapping.yaml fehlerhaft, das bisherige Mapping bleibt aktiv "
