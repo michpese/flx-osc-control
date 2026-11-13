@@ -32,3 +32,6 @@ Ableton Project Info/
 # Lokale Konfiguration, die nicht ins Repo gehört
 *.local.yaml
 .env
+
+# uv legt diese Datei bei jedem "uv sync" an; sie wird hier nicht versioniert
+uv.lock

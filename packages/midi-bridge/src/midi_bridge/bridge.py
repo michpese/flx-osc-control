@@ -85,7 +85,7 @@ class Bridge:
             retry_s=port_retry_s,
         )
         self._mapping_signature = file_signature(mapping.path)
-        self._last_trigger: dict[tuple[int, int], float] = {}  # worker only
+        self._last_trigger: dict[tuple[str, int], float] = {}  # worker only
         self._client: UdpClient | TcpSlipClient | None = None  # worker only
         self._client_target: Console | None = None  # worker only
         self._stopping = threading.Event()
@@ -267,14 +267,15 @@ class Bridge:
             self._event(*args, outcome=f"verworfen: {age:.1f} s alt, nicht nachgesendet")
             return
 
-        key = (channel, note)
+        # Per source, not per channel: two ports may use the same channel.
+        key = (source.name, note)
         last = self._last_trigger.get(key)
         if last is not None and item.t_recv - last < mapping.debounce_ms / 1000:
             self._event(*args, outcome="entprellt")
             return
-        self._last_trigger[key] = item.t_recv
 
         if self.dry_run:
+            self._last_trigger[key] = item.t_recv
             self._event(*args, elapsed=self._elapsed(item), outcome="DRY-RUN nicht gesendet")
             return
         try:
@@ -282,7 +283,8 @@ class Bridge:
         except (OSError, ZerosValueError) as exc:
             self._close_client()  # a broken connection is rebuilt on the next note
             self._event(*args, elapsed=self._elapsed(item), outcome=f"FEHLER beim Senden: {exc}")
-            return
+            return  # not debounced: a retry right after a failed send must go through
+        self._last_trigger[key] = item.t_recv
         self._event(*args, elapsed=self._elapsed(item), outcome="gesendet")
 
     def _elapsed(self, item: Incoming) -> float:

@@ -50,6 +50,11 @@ class Status(Enum):
 # (these messages are shown to operators by flxctl).
 
 
+# Technical guard, far beyond any value a console can take (not a value range).
+_MAX_DIGITS = 30
+_MAX_EXPONENT = 12
+
+
 def _to_decimal(value: object, what: str) -> Decimal:
     if isinstance(value, bool):
         raise ZerosValueError(f"{what}: {value!r} ist keine Zahl")
@@ -64,6 +69,11 @@ def _to_decimal(value: object, what: str) -> Decimal:
         raise ZerosValueError(f"{what}: {value!r} ist keine Zahl")
     if not number.is_finite():
         raise ZerosValueError(f"{what}: {value!r} ist keine endliche Zahl")
+    # Reject absurd magnitudes before int()/format() touch them: "1e9999999"
+    # is finite for Decimal but expands to millions of digits.
+    _sign, digits, exponent = number.as_tuple()
+    if len(digits) > _MAX_DIGITS or abs(exponent) > _MAX_EXPONENT:
+        raise ZerosValueError(f"{what}: Zahl ist zu groß oder zu fein, um ein Wert zu sein")
     return number
 
 

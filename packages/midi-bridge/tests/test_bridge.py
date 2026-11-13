@@ -173,8 +173,8 @@ def test_send_failure_is_logged_and_bridge_continues(tmp_path, backend, caplog, 
     closed.close()  # nothing listens here: TCP connect is refused
     path = tmp_path / "mapping.yaml"
     path.write_text(h.mapping_text(port, transport="tcp-slip"), encoding="utf-8")
-    # On Windows a refused local connect runs into the timeout (twice: one
-    # reconnect), so the second note would be discarded as too old. That is
+    # On Windows a refused local connect runs into the timeout, so the second
+    # note could be discarded as too old. That is
     # covered elsewhere; here only "send fails, bridge goes on" is checked.
     b = Bridge(load_mapping(path).mapping, backend, max_age_s=30.0)
     b.start()
@@ -449,3 +449,59 @@ def test_request_stop_from_other_thread_ends_run(bridge, backend):
 
 def test_port_retry_interval_is_two_seconds():
     assert PORT_RETRY_S == 2.0
+
+
+# --- debounce: per source, and only after a successful send ---------------------------
+
+
+def test_failed_send_does_not_start_debounce(bridge, mock_console, caplog, h, monkeypatch):
+    """A retry right after a failed send must go out, not be swallowed as 'entprellt'."""
+    real_client_for = bridge._client_for
+    failures = []
+
+    class Failing:
+        def send(self, address):
+            raise OSError("Netz weg")
+
+        def close(self):
+            pass
+
+    def flaky(console):
+        if not failures:
+            failures.append(1)
+            return Failing()
+        return real_client_for(console)
+
+    monkeypatch.setattr(bridge, "_client_for", flaky)
+    t0 = bridge.clock()
+    bridge.queue.put(h.note_on(bridge, 15, 2, t=t0))
+    h.wait_lines(caplog, "FEHLER beim Senden")
+    bridge.queue.put(h.note_on(bridge, 15, 2, t=t0 + 0.05))  # within debounce_ms
+    mock_console.wait_for(1)
+    assert sent_paths(mock_console) == ["/zeros/cue/go/10/2"]
+    assert not [r for r in caplog.messages if "entprellt" in r]
+
+
+def test_debounce_key_is_the_source_not_the_channel(tmp_path, backend, mock_console, h):
+    """Two ports that use the same channel must not debounce each other."""
+    text = h.mapping_text(mock_console.port).replace(
+        """  ableton:
+    midi_port: "LX Bridge"
+    channel: 16""",
+        """  ableton:
+    midi_port: "IAC LX"
+    channel: 15""",
+    )
+    path = tmp_path / "mapping.yaml"
+    path.write_text(text, encoding="utf-8")
+    b = Bridge(load_mapping(path).mapping, backend)
+    b.start()
+    try:
+        t0 = b.clock()
+        b.queue.put(h.note_on(b, 15, 2, t=t0, port="LX Bridge 1"))
+        b.queue.put(h.note_on(b, 15, 2, t=t0 + 0.01, port="IAC LX"))
+        mock_console.wait_for(2)
+        time.sleep(SETTLE)
+        assert len(mock_console.messages) == 2
+    finally:
+        b.stop()

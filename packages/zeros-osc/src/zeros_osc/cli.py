@@ -192,6 +192,12 @@ def _resolve_target(args: argparse.Namespace) -> tuple[str | None, int, str]:
     transport = getattr(args, "transport", transport)
     if transport not in TRANSPORTS:
         raise ZerosValueError(f"Transport {transport!r} unbekannt, erlaubt: udp, tcp-slip")
+    if host is not None:
+        if not isinstance(host, str) or not host.strip():
+            raise ZerosValueError(f"Ziel: host muss eine Adresse als Text sein, ist {host!r}")
+        host = host.strip()
+    if isinstance(port, bool) or not isinstance(port, int) or not 1 <= port <= 65535:
+        raise ZerosValueError(f"Ziel: port muss eine ganze Zahl von 1 bis 65535 sein, ist {port!r}")
     return host, port, transport
 
 
@@ -202,6 +208,9 @@ def _cmd_send(args: argparse.Namespace, out: TextIO, err: TextIO) -> int:
     try:
         address = command.build(*values)
         host, port, transport = _resolve_target(args)
+    except UnicodeDecodeError as exc:
+        print(f"Fehler: Datei ist nicht als UTF-8 gespeichert: {exc}", file=err)
+        return 2
     except (ZerosValueError, OSError, yaml.YAMLError) as exc:
         print(f"Fehler: {exc}", file=err)
         return 2
@@ -252,7 +261,11 @@ def _cmd_map_doc(args: argparse.Namespace, out: TextIO, err: TextIO) -> int:
         return 1
     text = mapping.render_doc(mapping.load(args.file), title=Path(args.file).name)
     if args.output:
-        Path(args.output).write_text(text, encoding="utf-8")
+        try:
+            Path(args.output).write_text(text, encoding="utf-8")
+        except OSError as exc:
+            print(f"Fehler: Spickzettel nicht schreibbar: {exc}", file=err)
+            return 1
         print(f"geschrieben: {args.output}", file=err)
     else:
         out.write(text)

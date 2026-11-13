@@ -13,7 +13,7 @@ Kanal und Note nachschlagen, Adresse über zeros-osc senden.
 Anforderungen
 1. Nur Note On mit Velocity größer 0 löst aus. Alles andere wird
    ignoriert.
-2. Entprellen: dieselbe Note auf demselben Kanal löst innerhalb von
+2. Entprellen: dieselbe Note von derselben Quelle löst innerhalb von
    debounce_ms nur einmal aus.
 3. Verschwindet der MIDI-Port, versucht die Bridge alle zwei Sekunden,
    ihn neu zu öffnen, ohne abzustürzen.

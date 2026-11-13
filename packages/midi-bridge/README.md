@@ -17,7 +17,7 @@ Note Off, Note On mit Velocity 0 und alle anderen MIDI-Nachrichten werden ohne L
 
 | Fall | Verhalten |
 | --- | --- |
-| Dieselbe Note auf demselben Kanal innerhalb von `debounce_ms` | löst nur einmal aus, die Wiederholung steht als `entprellt` im Log. Gemessen wird mit dem Zeitpunkt des Empfangs, nicht der Verarbeitung |
+| Dieselbe Note von derselben Quelle innerhalb von `debounce_ms` | löst nur einmal aus, die Wiederholung steht als `entprellt` im Log. Gemessen wird mit dem Zeitpunkt des Empfangs, nicht der Verarbeitung. Die Sperrzeit beginnt erst nach einem erfolgreichen Senden: Scheitert das Senden, geht ein sofortiger zweiter Versuch durch |
 | Note beim Verarbeiten älter als 2 s, zum Beispiel weil das Senden hing | wird verworfen und nicht nachgesendet, Log: `verworfen: … s alt` |
 | MIDI-Port verschwindet | Log-Zeile, dann alle 2 s ein neuer Versuch, ohne Absturz. Weitere Fehlversuche stehen nicht im Log, erst wieder das erfolgreiche Öffnen |
 | `mapping.yaml` geändert | wird innerhalb einer Sekunde erkannt, vollständig geprüft und übernommen, ohne Neustart. Erkannt wird jede Änderung am Inhalt, auch wenn Größe und Zeitstempel gleich bleiben. Ist die neue Datei fehlerhaft oder nicht als UTF-8 gespeichert, bleibt die alte aktiv und das Log nennt jeden Fehler einmal |

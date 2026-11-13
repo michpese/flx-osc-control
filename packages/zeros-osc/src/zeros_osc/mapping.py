@@ -6,6 +6,7 @@ Messages are German because operators read them.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
@@ -36,7 +37,12 @@ def _is_int(value: Any) -> bool:
 
 
 def _is_number(value: Any) -> bool:
-    return isinstance(value, int | float) and not isinstance(value, bool)
+    """A finite int or float (YAML ``.inf`` and ``.nan`` are floats, too)."""
+    if isinstance(value, bool):
+        return False
+    if isinstance(value, int):
+        return True
+    return isinstance(value, float) and math.isfinite(value)
 
 
 def _label(index: int, entry: Any) -> str:
@@ -61,6 +67,8 @@ def check(data: Any) -> CheckResult:
         host = console.get("host")
         if not isinstance(host, str) or not host.strip():
             err("console.host fehlt")
+        elif host != host.strip():
+            err(f"console.host hat Leerzeichen am Anfang oder Ende: {host!r}")
         port = console.get("port")
         if not _is_int(port) or not 1 <= port <= 65535:
             err(f"console.port muss eine Zahl von 1 bis 65535 sein, ist {port!r}")
@@ -71,6 +79,7 @@ def check(data: Any) -> CheckResult:
     # sources
     sources = data.get("sources")
     source_names: set[str] = set()
+    seen_inputs: dict[tuple[str, int], str] = {}
     if not isinstance(sources, dict) or not sources:
         err("sources fehlt oder ist leer")
     else:
@@ -80,17 +89,30 @@ def check(data: Any) -> CheckResult:
                 err(f"sources.{name} muss midi_port und channel enthalten")
                 continue
             port = src.get("midi_port")
-            if not isinstance(port, str) or not port.strip():
+            port_ok = isinstance(port, str) and bool(port.strip())
+            if not port_ok:
                 err(f"sources.{name}.midi_port fehlt")
+            elif port != port.strip():
+                err(f"sources.{name}.midi_port hat Leerzeichen am Anfang oder Ende: {port!r}")
             channel = src.get("channel")
-            if not _is_int(channel) or not 1 <= channel <= 16:
+            channel_ok = _is_int(channel) and 1 <= channel <= 16
+            if not channel_ok:
                 err(f"sources.{name}.channel muss 1 bis 16 sein, ist {channel!r}")
+            if port_ok and channel_ok:
+                # Two sources on the same port and channel cannot be told apart:
+                # the second one would never be used.
+                first = seen_inputs.setdefault((port.strip(), channel), str(name))
+                if first != str(name):
+                    err(
+                        f"sources.{name}: gleicher midi_port und channel wie sources.{first}; "
+                        "die Quellen sind nicht unterscheidbar"
+                    )
 
     # debounce_ms (optional)
     if "debounce_ms" in data:
         debounce = data["debounce_ms"]
         if not _is_number(debounce) or debounce < 0:
-            err(f"debounce_ms muss eine Zahl ab 0 sein, ist {debounce!r}")
+            err(f"debounce_ms muss eine endliche Zahl ab 0 sein, ist {debounce!r}")
 
     # cues
     cues = data.get("cues")
@@ -148,6 +170,9 @@ def check_file(path: str | Path) -> CheckResult:
         data = load(path)
     except OSError as exc:
         return CheckResult(errors=[f"Datei nicht lesbar: {exc}"])
+    except UnicodeDecodeError as exc:
+        # UnicodeDecodeError is a ValueError, not an OSError.
+        return CheckResult(errors=[f"Datei ist nicht als UTF-8 gespeichert: {exc}"])
     except yaml.YAMLError as exc:
         return CheckResult(errors=[f"YAML-Fehler: {exc}"])
     return check(data)

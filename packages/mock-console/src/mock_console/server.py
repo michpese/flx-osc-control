@@ -245,7 +245,12 @@ class MockConsole:
                 if self._stop.is_set():
                     break
                 raise
-            self.handle_datagram(data, f"{addr[0]}:{addr[1]}")
+            try:
+                self.handle_datagram(data, f"{addr[0]}:{addr[1]}")
+            except Exception:  # keep receiving whatever one datagram does
+                log.exception(
+                    "mock-console: FEHLER bei einem Paket von %s, Empfang läuft weiter", addr[0]
+                )
 
     def handle_datagram(self, data: bytes, sender: str) -> list[Received]:
         """Judge, log and store one datagram. Public so tests can feed bytes directly."""

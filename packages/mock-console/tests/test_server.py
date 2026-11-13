@@ -150,3 +150,32 @@ def test_cli_reports_busy_port(capsys):
         code = main(["--host", LOCALHOST, "--port", str(console.port)])
     assert code == 1
     assert "nicht verfügbar" in capsys.readouterr().err
+
+
+def test_receiver_survives_an_error_in_one_datagram(mock_console, sender, monkeypatch):
+    """A failing datagram is logged; the next one is still received."""
+    original = mock_console.handle_datagram
+    calls = []
+
+    def flaky(data, sender_name):
+        calls.append(data)
+        if len(calls) == 1:
+            raise RuntimeError("boom")
+        return original(data, sender_name)
+
+    monkeypatch.setattr(mock_console, "handle_datagram", flaky)
+    sender.sendto(message("/zeros/cue/go/1/5"), ("127.0.0.1", mock_console.port))
+    sender.sendto(message("/zeros/cue/go/1/6"), ("127.0.0.1", mock_console.port))
+    received = mock_console.wait_for(1)
+    assert received[0].path == "/zeros/cue/go/1/6"
+
+
+def test_cli_leaves_logger_as_it_was(capsys):
+    """main() must not leave its handler or level behind (it is called from tests)."""
+    logger = logging.getLogger("mock_console")
+    handlers, level = list(logger.handlers), logger.level
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as busy:
+        busy.bind(("127.0.0.1", 0))
+        assert main(["--host", "127.0.0.1", "--port", str(busy.getsockname()[1])]) == 1
+    assert logger.handlers == handlers
+    assert logger.level == level

@@ -178,3 +178,36 @@ def test_invalid_packet(data):
     verdict = only(data).verdict
     assert not verdict.accepted
     assert verdict.reason is Reason.INVALID
+
+
+# --- float arguments and packets that must not kill the receiver ----------------------
+
+
+def test_whole_float_argument_is_the_same_as_an_integer():
+    verdict = evaluate_message("/zeros/cue/go/1", (5.0,))
+    assert verdict.accepted and verdict.path == "/zeros/cue/go/1/5"
+
+
+def test_point_cue_as_32_bit_float_argument():
+    # 2.3 as an OSC float32 arrives as 2.299999952316284.
+    verdict = only(message("/zeros/cue/go/1", 2.3)).verdict
+    assert verdict.accepted and verdict.path == "/zeros/cue/go/1/2.3"
+
+
+@pytest.mark.parametrize("address", ["/zeros/cue/go/1e5000/1", "/zeros/cue/go/1e9999999/1"])
+def test_huge_exponent_is_ignored_not_fatal(address):
+    parsed = only(message(address))
+    assert not parsed.verdict.accepted
+    assert parsed.verdict.reason is Reason.UNKNOWN_ADDRESS
+
+
+def test_unexpected_error_while_judging_yields_invalid(monkeypatch):
+    import mock_console.evaluate as evaluate
+
+    def boom(path):
+        raise ValueError("boom")
+
+    monkeypatch.setattr(evaluate, "match_address", boom)
+    parsed = only(message("/zeros/cue/go/1/5"))
+    assert parsed.verdict.reason is Reason.INVALID
+    assert "boom" in parsed.verdict.detail

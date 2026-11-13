@@ -284,10 +284,10 @@ Die Einzelschritte je Betriebssystem stehen im [README der midi-bridge](packages
 
 ## Bekannte Einschränkungen
 
-Stand des Prüfberichts vom 13.11.2026 zu Commit `6e3cf48`. Bis die Punkte behoben sind, gilt im Betrieb:
+Stand nach zwei Prüfberichten vom 13.11.2026. Bis die Punkte behoben oder am Gerät geprüft sind, gilt im Betrieb:
 
-- **`mapping.yaml` immer als UTF-8 speichern.** Eine Datei in anderer Kodierung, etwa ANSI aus dem Windows-Editor, beendet die laufende Bridge.
-- **UDP verwenden,** nicht `tcp-slip`. Bei TCP geht nach einem Neustart des Pults die erste Note still verloren.
+- **`mapping.yaml` immer als UTF-8 speichern.** Eine Datei in anderer Kodierung, etwa ANSI aus dem Windows-Editor, lehnen `flxctl` und die Bridge mit einer Fehlermeldung ab; die laufende Bridge behält dann das alte Mapping.
+- **UDP verwenden,** nicht `tcp-slip`. Der TCP-Client erkennt eine vom Pult geschlossene Verbindung jetzt vor dem Senden und verbindet neu. Bricht die Verbindung ohne sauberes Schließen ab, etwa bei gezogenem Kabel, kann die erste Note danach weiterhin verloren gehen. Mit dem Pult ist TCP nicht getestet.
 - **Am Mac den Portnamen aus `--list-ports` eintragen.** „LX Bridge" allein passt dort vermutlich nicht.
 - **Unter Windows nicht ins Fenster der Bridge klicken.** Markierter Text hält dort vermutlich die Ausgabe und damit die Bridge an.
 - **Nur eine Bridge je Rechner starten.** Zwei senden jede Note doppelt.

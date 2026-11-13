@@ -115,6 +115,10 @@ Zahlen werden normalisiert gesendet: `3.0` wird zu `3`, `2.50` zu `2.5`. Falsche
 | `udp` (Standard) | `UdpClient` | ein OSC-Paket pro Datagramm |
 | `tcp-slip` | `TcpSlipClient` | SLIP nach OSC 1.1 (END-Byte am Anfang und Ende) |
 
+Der `TcpSlipClient` prüft vor jedem Senden, ob die Gegenseite die Verbindung geschlossen hat, und verbindet dann zuerst neu. Scheitert schon der Verbindungsaufbau, versucht er es bei diesem Senden kein zweites Mal; ein Aufruf wartet so höchstens ein Zeitlimit.
+
+`flxctl` prüft das Ziel vor dem Senden: `host` muss Text sein, `port` eine ganze Zahl von 1 bis 65535, auch mit `--dry-run` und bei Werten aus `--config`. Zahlen in Adressen mit absurd großem Exponenten wie `1e9999999` werden abgelehnt, bevor sie ausgeschrieben werden.
+
 Die Einstellung muss zum Feld „Transport" am Pult passen. Beide Clients prüfen jede Adresse vor dem Senden gegen die Referenz und verweigern alles andere.
 
 ## Grenzen
