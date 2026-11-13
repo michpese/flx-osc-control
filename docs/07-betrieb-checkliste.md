@@ -8,7 +8,7 @@ Eine Seite zum Ausdrucken für das Technikpult.
 - [ ] Pult ist an, das richtige Showfile ist geladen
 - [ ] Der MIDI-Port „LX Bridge" ist vorhanden (Windows: loopMIDI läuft)
 - [ ] Die Bridge läuft und zeigt den MIDI-Port und das geladene Mapping
-- [ ] Test vom Laptop: `flxctl cue go 10 1` erscheint im Event Monitor
+- [ ] Test vom Laptop: `uv run flxctl --config shows/<ort>/mapping.yaml cue go 10 1` erscheint im Event Monitor
 - [ ] Test-Folie in ProPresenter löst den richtigen Cue aus
 - [ ] Test-Clip in Ableton löst den richtigen Cue aus
 - [ ] Pro Song ist klar, ob Ableton oder ProPresenter das Licht führt

@@ -14,6 +14,8 @@ sources:
     midi_port: "LX Bridge"
     channel: 15
   ableton:
+    # Am Mac heißt der Port anders, etwa "IAC-Treiber LX Bridge".
+    # Trage hier den Namen ein, den `midi-bridge --list-ports` am Mac zeigt.
     midi_port: "LX Bridge"
     channel: 16
 

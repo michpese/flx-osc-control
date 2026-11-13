@@ -18,7 +18,7 @@ Voraussetzung: Der virtuelle MIDI-Port „LX Bridge" existiert, siehe [03-setup-
 
 1. **MIDI-Ausgang freigeben.** Settings → Link, Tempo & MIDI. Beim Ausgang „LX Bridge" den Schalter „Track" einschalten, „Sync" und „Remote" aus lassen.
 2. **Spur anlegen.** Neue MIDI-Spur mit dem Namen „LX", ohne Instrument.
-3. **Routing:** „MIDI To" auf „LX Bridge", Kanal 16.
+3. **Routing:** „MIDI To" auf „LX Bridge", Kanal 16. „MIDI From" auf „No Input" stellen, damit die Spur keine Noten vom Port zurück empfängt und im Kreis schickt.
 4. **Noten setzen.** Pro Lichtwechsel eine kurze Note an der Stelle im Song. Die Notennummer kommt aus `mapping.yaml`.
 5. **Vorlauf einstellen.** Soll eine Überblendung auf dem Schlag fertig sein, setze die Note um die Fade-Zeit früher. Ein negatives Track Delay verschiebt alle Noten der Spur gemeinsam.
 6. **Als Vorlage speichern.** Die leere Spur mit Routing kommt als Template-Set nach [`integrations/ableton/`](../integrations/ableton/README.md).
