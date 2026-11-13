@@ -206,7 +206,31 @@ def test_forum_commands_are_flagged_untested():
             assert command.status.untested, cid
 
 
+def test_unsourced_commands_are_flagged_unconfirmed():
+    unconfirmed = {cid for cid, command in COMMANDS.items() if command.status.unconfirmed}
+    assert unconfirmed == {
+        "cue_pause",
+        "cue_next",
+        "playback_go",
+        "playback_pause",
+        "playback_level",
+        "playback_release",
+        "playback_view",
+        "grand_master",
+        "blackout",
+    }
+    for cid in unconfirmed:
+        assert COMMANDS[cid].status is Status.VERMUTET, cid
+        assert COMMANDS[cid].status.untested, cid
+    assert not Status.BELEGT.unconfirmed
+    assert not Status.FORUM.unconfirmed
+
+
 def test_warnings():
     assert address_warnings(match_address("/zeros/cue/go/10/1")) == []
     assert any("Playback 0" in w for w in address_warnings(match_address("/zeros/cue/go/0/4")))
-    assert any("ungetestet" in w for w in address_warnings(match_address("/zeros/macro/1")))
+    forum = address_warnings(match_address("/zeros/macro/1"))
+    assert any("ungetestet" in w and "Status Forum" in w for w in forum)
+    assert not any("vermutet" in w for w in forum)
+    guessed = address_warnings(match_address("/zeros/blackout/1"))
+    assert any("ungetestet" in w and "Status vermutet" in w for w in guessed)

@@ -162,6 +162,10 @@ def test_help_marks_forum_commands_untested(capsys):
             assert "UNGETESTET" in text, command.id
         else:
             assert "UNGETESTET" not in text, command.id
+        if command.status is Status.VERMUTET:
+            assert "UNBELEGT" in text, command.id
+        else:
+            assert "UNBELEGT" not in text, command.id
 
 
 def test_group_help_lists_untested_tag(capsys):
@@ -170,6 +174,7 @@ def test_group_help_lists_untested_tag(capsys):
     text = capsys.readouterr().out
     assert "[belegt]" in text  # cue go
     assert "[ungetestet]" in text  # cue go-current etc.
+    assert "[vermutet]" in text  # cue pause, cue next
 
 
 # --- map check / doc --------------------------------------------------------------

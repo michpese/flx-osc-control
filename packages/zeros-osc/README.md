@@ -40,7 +40,7 @@ $ flxctl map check shows/kirche/mapping.yaml
 Fehler: cues[4] (Note 1): doppelte Note 1, schon in cues[0]
 Fehler: cues[5] (Note 6): name fehlt
 Fehler: cues[6] (Note 7): Adresse /zeros/release/all passt zu keinem Befehl der Referenz
-Hinweis: cues[3] (Note 5): /zeros/blackout/1: blackout ist ungetestet (Status Forum)
+Hinweis: cues[3] (Note 5): /zeros/blackout/1: blackout ist ungetestet (Status vermutet, Schreibweise nicht belegt)
 3 Fehler in shows/kirche/mapping.yaml
 ```
 
@@ -82,18 +82,18 @@ Quelle: [docs/02-flx-osc-referenz.md](../../docs/02-flx-osc-referenz.md). Gesend
 | `cue_go(playback, cue)` | `cue go P C` | `/zeros/cue/go/<playback>/<cue>` | belegt |
 | `cue_go_current(cue)` | `cue go-current C` | `/zeros/cue/go/<cue>` | ungetestet |
 | `cue_go_next()` | `cue go-next` | `/zeros/cue/go` | ungetestet |
-| `cue_pause(playback)` | `cue pause P` | `/zeros/cue/pause/<playback>` | ungetestet |
-| `cue_next(playback, cue)` | `cue next P C` | `/zeros/cue/next/<playback>/<cue>` | ungetestet |
+| `cue_pause(playback)` | `cue pause P` | `/zeros/cue/pause/<playback>` | vermutet |
+| `cue_next(playback, cue)` | `cue next P C` | `/zeros/cue/next/<playback>/<cue>` | vermutet |
 | `macro(number)` | `macro N` | `/zeros/macro/<nummer>` | ungetestet |
-| `playback_go(playback)` | `playback go P` | `/zeros/playback/go/<playback>` | ungetestet |
-| `playback_pause(playback)` | `playback pause P` | `/zeros/playback/pause/<playback>` | ungetestet |
-| `playback_level(playback, level, fade=None)` | `playback level P L [--fade S]` | `/zeros/playback/level/<playback>/<level>[/<fade>]` | ungetestet |
-| `playback_release(playback)` | `playback release P` | `/zeros/playback/release/<playback>` | ungetestet |
-| `playback_view(playback)` | `playback view P` | `/zeros/playback/view/<playback>` | ungetestet |
-| `grand_master(level, fade=None)` | `grandmaster L [--fade S]` | `/zeros/grandmaster/<level>[/<fade>]` | ungetestet |
-| `blackout(value)` | `blackout on\|off\|1\|0` | `/zeros/blackout/<1\|0>` | ungetestet |
+| `playback_go(playback)` | `playback go P` | `/zeros/playback/go/<playback>` | vermutet |
+| `playback_pause(playback)` | `playback pause P` | `/zeros/playback/pause/<playback>` | vermutet |
+| `playback_level(playback, level, fade=None)` | `playback level P L [--fade S]` | `/zeros/playback/level/<playback>/<level>[/<fade>]` | vermutet |
+| `playback_release(playback)` | `playback release P` | `/zeros/playback/release/<playback>` | vermutet |
+| `playback_view(playback)` | `playback view P` | `/zeros/playback/view/<playback>` | vermutet |
+| `grand_master(level, fade=None)` | `grandmaster L [--fade S]` | `/zeros/grandmaster/<level>[/<fade>]` | vermutet |
+| `blackout(value)` | `blackout on\|off\|1\|0` | `/zeros/blackout/<1\|0>` | vermutet |
 
-„ungetestet" = Status „Forum" in der Referenz. `flxctl` zeigt das im Hilfetext und gibt beim Senden einen Hinweis aus.
+„ungetestet" = Status „Forum" in der Referenz: im Herstellerforum genannt. „vermutet" = ohne Quelle eingetragen; die Schreibweise ist unbestätigt, bis sie am Pult geprüft ist. `flxctl` zeigt beides im Hilfetext und gibt beim Senden einen Hinweis aus.
 
 ### Wertebereiche
 

@@ -17,7 +17,7 @@ Getestet wird in sieben Stufen von innen nach außen: erst das Protokoll, dann d
 ## Hinweise
 
 - **Stufe 1 ist ein offener Punkt.** Phantom ZerOS ist kostenlos und läuft auf Windows 10. Das Handbuch sagt nichts zu OSC im Simulator; im Herstellerforum beschreibt ein Anwender die OSC-Steuerung eines Phantom FLX S24. Prüfe das zuerst. Klappt es nicht, entfällt Stufe 1 und Stufe 2 wird gründlicher.
-- **Stufe 2 füllt die Referenz.** Hier klärst du die offenen Schreibweisen aus [02-flx-osc-referenz.md](02-flx-osc-referenz.md) und das Verhalten von Playback 0.
+- **Stufe 2 füllt die Referenz.** Hier bestätigst oder widerlegst du die vermuteten Schreibweisen aus [02-flx-osc-referenz.md](02-flx-osc-referenz.md) und klärst das Verhalten von Playback 0.
 - **Stufe 3 braucht kein Pult.** Die `mock-console` ersetzt es.
 - **Stufe 5 ist Pflicht.** Weil UDP nichts bestätigt, merkst du einen Ausfall nur am Licht.
 
@@ -32,6 +32,23 @@ Für jeden Befehl der Referenz eine Zeile.
 | `cue_go_current` | `/zeros/cue/go/1` | | | |
 | `cue_go_next` | `/zeros/cue/go` | | | |
 | `macro` | `/zeros/macro/1` | | | |
+
+Die folgenden Befehle stehen in der Referenz auf „vermutet". Erst diese Zeilen zeigen, ob ihre Schreibweise stimmt. Meldet der Event Monitor einen Fehler, trage die richtige Schreibweise aus dem ZerOS-Handbuch in die Referenz ein.
+
+| Befehl | Gesendete Adresse | Im Event Monitor | Wirkung am Pult | Datum |
+| --- | --- | --- | --- | --- |
+| `cue_pause` | `/zeros/cue/pause/10` | | | |
+| `cue_next` | `/zeros/cue/next/10/2` | | | |
+| `playback_go` | `/zeros/playback/go/10` | | | |
+| `playback_pause` | `/zeros/playback/pause/10` | | | |
+| `playback_level` | `/zeros/playback/level/10/50` | | | |
+| `playback_level` mit Fade | `/zeros/playback/level/10/100/2` | | | |
+| `playback_release` | `/zeros/playback/release/10` | | | |
+| `playback_view` | `/zeros/playback/view/10` | | | |
+| `grand_master` | `/zeros/grandmaster/50` | | | |
+| `grand_master` mit Fade | `/zeros/grandmaster/100/3` | | | |
+| `blackout` ein | `/zeros/blackout/1` | | | |
+| `blackout` aus | `/zeros/blackout/0` | | | |
 
 ## Stufe 5: Störfälle
 

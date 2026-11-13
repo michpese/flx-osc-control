@@ -2,7 +2,7 @@
 
 Lichtstimmungen auf einem **Zero 88 FLX S24** aus **ProPresenter** und **Ableton Live** auslösen – über MIDI-Noten, eine kleine Bridge und OSC (Open Sound Control).
 
-> **Stand:** Konzept und Dokumentation stehen. Der Code unter `packages/` ist noch nicht geschrieben. Die Bauaufträge dafür liegen fertig unter [`prompts/`](prompts/README.md).
+> **Stand:** Konzept und Dokumentation stehen. `zeros-osc` mit der Kommandozeile `flxctl` ist gebaut, am Pult aber noch nicht getestet. `mock-console` und `midi-bridge` fehlen noch; die Bauaufträge liegen unter [`prompts/`](prompts/README.md).
 
 ## So funktioniert es
 
@@ -60,7 +60,7 @@ Technik: Python ab 3.11 mit `python-osc`, `mido` samt `python-rtmidi`, `PyYAML` 
 ## Erste Schritte
 
 1. **Pult vorbereiten** nach [docs/03-setup-flx.md](docs/03-setup-flx.md): ZerOS ab 7.14, OSC einschalten, feste IP-Adressen.
-2. **Referenz vervollständigen:** die offenen Befehle in [docs/02-flx-osc-referenz.md](docs/02-flx-osc-referenz.md) aus dem ZerOS-Handbuch übertragen.
+2. **Referenz prüfen:** die neun Befehle mit Status „vermutet" in [docs/02-flx-osc-referenz.md](docs/02-flx-osc-referenz.md) mit dem ZerOS-Handbuch abgleichen.
 3. **Code bauen lassen:** die Prompts unter [`prompts/`](prompts/README.md) der Reihe nach an Opus 5.5 geben.
 4. **Ersten Cue vom Laptop auslösen** mit `flxctl` (Teststufen 1 und 2 im [Testplan](docs/06-testplan.md)).
 5. **ProPresenter und Ableton anschließen** nach [docs/04](docs/04-setup-propresenter.md) und [docs/05](docs/05-setup-ableton.md).
@@ -91,14 +91,13 @@ Die CI (`.github/workflows/ci.yml`) führt dieselben Schritte auf macOS und Wind
 
 ## Offene Punkte
 
-- [ ] Exakte OSC-Schreibweise für Playback Level, Release, Pause, Grand Master und Blackout aus dem ZerOS-Handbuch übertragen und am Pult testen
+- [ ] Die neun Befehle mit Status „vermutet" (Cue Pause und Next, Playback Go, Pause, Level, Release und View, Grand Master, Blackout) mit dem ZerOS-Handbuch abgleichen und am Pult testen
 - [ ] Tatsächliche IP-Adresse des Pults und die OSC-Adresseinstellung prüfen
 - [ ] Prüfen, ob Phantom ZerOS OSC empfängt
 - [ ] Prüfen, ob `/zeros/cue/go/0/<cue>` auf dem Master Playback funktioniert
-- [ ] Klären, ob ProPresenter und Ableton auf demselben Rechner laufen und unter welchem Betriebssystem
+- [x] Geklärt: ProPresenter läuft auf einem Windows-PC, Ableton auf einem Mac; die Bridge läuft auf beiden
 - [ ] Klären, welche Ableton-Edition vorhanden ist und ob Max for Live dabei ist
 - [ ] Klären, ob in der ProPresenter-Lizenz MIDI-Geräte verfügbar sind
-- [ ] Lizenz für dieses Repo festlegen
 
 ## Grundregeln
 
