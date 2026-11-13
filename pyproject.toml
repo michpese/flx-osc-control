@@ -1,0 +1,40 @@
+# Workspace root of flx-osc-control. Not a package itself.
+[project]
+name = "flx-osc-control"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "zeros-osc",
+    "mock-console",
+    "midi-bridge",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.uv.sources]
+zeros-osc = { workspace = true }
+mock-console = { workspace = true }
+midi-bridge = { workspace = true }
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["packages/*/src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["packages", "tests"]
+# Each package has its own tests/ folder without __init__.py.
+addopts = "--import-mode=importlib"

@@ -1,0 +1,17 @@
+[project]
+name = "mock-console"
+version = "0.1.0"
+description = "Attrappe des FLX S24 für Tests ohne Hardware"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "zeros-osc",
+    "python-osc>=1.9",
+]
+
+[tool.uv.sources]
+zeros-osc = { workspace = true }
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"

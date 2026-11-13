@@ -1,0 +1,36 @@
+# Beispiel-Mapping: MIDI-Note -> OSC-Befehl für das FLX S24
+#
+# Kopiere diese Datei nach shows/<ort-oder-anlass>/mapping.yaml und passe sie an.
+# Schema und Regeln: docs/01-konzept.md
+# Erlaubte OSC-Adressen: docs/02-flx-osc-referenz.md
+
+console:
+  host: 192.168.1.10      # IP-Adresse des Pults
+  port: 8830              # "Receive Port Number" am Pult
+  transport: udp          # udp oder tcp-slip, muss zum Pult passen
+
+sources:
+  propresenter:
+    midi_port: "LX Bridge"
+    channel: 15
+  ableton:
+    midi_port: "LX Bridge"
+    channel: 16
+
+# Dieselbe Note auf demselben Kanal löst innerhalb dieser Zeit nur einmal aus.
+debounce_ms: 250
+
+# Notennummern werden nie neu vergeben. Neue Einträge bekommen neue Nummern.
+cues:
+  - note: 1
+    name: "Einlass"
+    osc: "/zeros/cue/go/10/1"
+  - note: 2
+    name: "Musik ruhig"
+    osc: "/zeros/cue/go/10/2"
+  - note: 3
+    name: "Musik kräftig"
+    osc: "/zeros/cue/go/10/3"
+  - note: 4
+    name: "Rede"
+    osc: "/zeros/cue/go/10/4"
