@@ -10,6 +10,9 @@ dependencies = [
     "PyYAML>=6.0",
 ]
 
+[project.scripts]
+flxctl = "zeros_osc.cli:main"
+
 [build-system]
 requires = ["setuptools>=69"]
 build-backend = "setuptools.build_meta"

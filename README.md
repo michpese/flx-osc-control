@@ -49,7 +49,7 @@ Warum der Umweg über MIDI? Das Pult empfängt OSC, aber ProPresenter kann kein 
 
 | Paket | Aufgabe | Stand |
 | --- | --- | --- |
-| [`zeros-osc`](packages/zeros-osc/README.md) | ZerOS-Befehle bauen, prüfen und senden; Kommandozeile `flxctl` | geplant |
+| [`zeros-osc`](packages/zeros-osc/README.md) | ZerOS-Befehle bauen, prüfen und senden; Kommandozeile `flxctl` | 0.1.0, am Pult ungetestet |
 | [`mock-console`](packages/mock-console/README.md) | Pult-Attrappe für Tests ohne Hardware | geplant |
 | [`midi-bridge`](packages/midi-bridge/README.md) | MIDI-Note in OSC übersetzen | geplant |
 | `propresenter-watcher` | OSC aus der ProPresenter-API ableiten | optional, später |
