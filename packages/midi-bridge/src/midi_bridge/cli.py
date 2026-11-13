@@ -28,14 +28,13 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _setup_logging() -> None:
+def _setup_logging() -> logging.Handler:
     logger = logging.getLogger("midi_bridge")
-    if not any(getattr(h, "_midi_bridge", False) for h in logger.handlers):
-        handler = logging.StreamHandler(sys.stdout)
-        handler.setFormatter(logging.Formatter("%(message)s"))
-        handler._midi_bridge = True  # type: ignore[attr-defined]
-        logger.addHandler(handler)
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(logging.Formatter("%(message)s"))
+    logger.addHandler(handler)
     logger.setLevel(logging.INFO)
+    return handler
 
 
 def _list_ports(backend: MidiBackend) -> int:
@@ -72,13 +71,15 @@ def main(argv: Sequence[str] | None = None, backend: MidiBackend | None = None) 
         )
         return 1
 
-    _setup_logging()
+    handler = _setup_logging()
     bridge = Bridge(result.mapping, backend, dry_run=args.dry_run)
     try:
         return bridge.run()
     except KeyboardInterrupt:
         bridge.stop()  # already done by run(); stop() is idempotent
         return 0
+    finally:
+        logging.getLogger("midi_bridge").removeHandler(handler)
 
 
 if __name__ == "__main__":

@@ -87,3 +87,11 @@ def test_ctrl_c_ends_cleanly(tmp_path, monkeypatch, capsys, h):
     assert main(["--mapping", str(path), "--dry-run"], backend=h.FakeBackend()) == 0
     out = capsys.readouterr().out
     assert "DRY-RUN" in out and "beendet" in out
+    # main() removes its handler, so later log lines do not hit a closed stream
+    import logging
+
+    assert not [
+        x
+        for x in logging.getLogger("midi_bridge").handlers
+        if isinstance(x, logging.StreamHandler) and not type(x).__name__.startswith("LogCapture")
+    ]

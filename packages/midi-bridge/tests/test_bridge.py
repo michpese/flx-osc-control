@@ -173,12 +173,15 @@ def test_send_failure_is_logged_and_bridge_continues(tmp_path, backend, caplog, 
     closed.close()  # nothing listens here: TCP connect is refused
     path = tmp_path / "mapping.yaml"
     path.write_text(h.mapping_text(port, transport="tcp-slip"), encoding="utf-8")
-    b = Bridge(load_mapping(path).mapping, backend)
+    # On Windows a refused local connect runs into the timeout (twice: one
+    # reconnect), so the second note would be discarded as too old. That is
+    # covered elsewhere; here only "send fails, bridge goes on" is checked.
+    b = Bridge(load_mapping(path).mapping, backend, max_age_s=30.0)
     b.start()
     try:
         b.queue.put(h.note_on(b, 15, 2))
         b.queue.put(h.note_on(b, 15, 1))
-        lines = h.wait_lines(caplog, "FEHLER beim Senden", 2)
+        lines = h.wait_lines(caplog, "FEHLER beim Senden", 2, timeout=10.0)
         assert "adresse=/zeros/cue/go/10/2" in lines[0]
         assert b.worker_alive
     finally:

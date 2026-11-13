@@ -63,7 +63,8 @@ def _wait_input(tag: str, present: bool = True, timeout: float = 3.0) -> str | N
 
 
 def _lines(caplog, text: str) -> list[str]:
-    return [r.getMessage() for r in list(caplog.records) if text in r.getMessage()]
+    records = list(caplog.get_records("setup")) + list(caplog.records)
+    return [r.getMessage() for r in records if text in r.getMessage()]
 
 
 def _wait_log(caplog, text: str, count: int = 1, timeout: float = 5.0) -> None:
@@ -77,7 +78,7 @@ def _wait_log(caplog, text: str, count: int = 1, timeout: float = 5.0) -> None:
 @pytest.fixture
 def setup(tmp_path, mock_console, caplog):
     caplog.set_level(logging.INFO, logger="midi_bridge")
-    tag = f"LX E2E {os.getpid()}"
+    tag = f"LX E2E {os.getpid()} Test"  # no trailing digits, see midi_port below
     out = _open_virtual(tag)
     state = {"out": out}
     actual = _wait_input(tag)
