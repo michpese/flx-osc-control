@@ -23,7 +23,10 @@ Anforderungen
    --list-ports zeigt alle MIDI-Eingänge.
 6. Log je Ereignis: Empfangszeit, Quelle, Kanal, Note, Name, Adresse,
    Dauer zwischen Empfang und Versand in Millisekunden.
-7. Sauberes Beenden mit Strg+C.
+7. Beim Start und nach jedem Neuladen zeigt die Bridge die Hinweise
+   aus der Mapping-Prüfung an, insbesondere Einträge mit Status
+   "vermutet" oder "Forum".
+8. Sauberes Beenden mit Strg+C.
 
 Grenzen: keine grafische Oberfläche, kein eigenes Senden an zeros-osc
 vorbei, keine Annahmen über Portnamen außerhalb der Konfiguration. Die
@@ -37,6 +40,9 @@ Fertig, wenn: tests/e2e mit einem virtuellen MIDI-Port und der
 mock-console zeigt, dass eine Note genau eine Nachricht erzeugt, dass
 Entprellen greift und dass ein Port-Verlust überstanden wird; und das
 README des Pakets die Einrichtung auf macOS und Windows Schritt für
-Schritt beschreibt. Sage mir ausdrücklich, falls ein Test auf einem der
-beiden Betriebssysteme nicht laufen kann, und warum.
+Schritt beschreibt; und die CI des Pull Requests grün ist. Braucht ein
+Test einen virtuellen MIDI-Port, den die CI nicht hat, markiere ihn so,
+dass er dort übersprungen wird, und decke dieselbe Logik zusätzlich mit
+einem Test ohne echten Port ab. Sage mir ausdrücklich, welche Tests wo
+nicht laufen, und warum.
 ```

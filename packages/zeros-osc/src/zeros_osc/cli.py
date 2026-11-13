@@ -22,14 +22,18 @@ from .commands import COMMANDS, Command, Status, ZerosValueError, address_warnin
 EPILOG = (
     "Adressen stammen aus docs/02-flx-osc-referenz.md. Befehle mit dem Vermerk "
     "[ungetestet] stehen dort mit Status „Forum“: im Herstellerforum genannt, "
-    "nicht im Handbuch belegt und noch nicht am Pult getestet. Das Pult meldet "
-    "nichts zurück; ob ein Befehl ankam, zeigt nur der Event Monitor am Pult."
+    "nicht im Handbuch belegt und noch nicht am Pult getestet. Befehle mit dem "
+    "Vermerk [vermutet] sind ohne Quelle eingetragen; ihre Schreibweise ist "
+    "unbestätigt. Das Pult meldet nichts zurück; ob ein Befehl ankam, zeigt nur "
+    "der Event Monitor am Pult."
 )
 
 
 def _status_tag(command: Command) -> str:
     if command.status is Status.FORUM:
         return "[ungetestet]"
+    if command.status is Status.VERMUTET:
+        return "[vermutet]"
     return "[belegt]"
 
 
@@ -43,6 +47,11 @@ def _command_description(command: Command) -> str:
         text += (
             "Status: Forum – UNGETESTET. Nur im Herstellerforum genannt, "
             "nicht im ZerOS-Handbuch belegt.\n"
+        )
+    elif command.status is Status.VERMUTET:
+        text += (
+            "Status: vermutet – UNBELEGT. Schreibweise ohne Quelle eingetragen; "
+            "vor dem Einsatz am Pult prüfen.\n"
         )
     else:
         text += "Status: belegt (ZerOS-Handbuch).\n"

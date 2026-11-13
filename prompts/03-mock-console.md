@@ -15,13 +15,22 @@ Anforderungen
    Adressen in allen vier gleichwertigen Schreibweisen, markiert
    Wildcards, Bundles mit Zeitstempel und unbekannte Adressen als
    "ignoriert" mit Grund.
-4. Bietet eine Python-Fixture für pytest, die die Attrappe auf einem
-   freien Port startet und die empfangenen Nachrichten zurückgibt.
+4. Schreibt zu jeder akzeptierten Nachricht den Status des Befehls aus
+   der Referenz dazu (belegt, Forum, vermutet). Bei "vermutet" steht im
+   Log ausdrücklich, dass die Attrappe die Schreibweise nur annimmt,
+   weil sie in der Referenz steht, und dass das echte Pult sie
+   ablehnen kann.
+5. Bietet eine Python-Fixture für pytest, die die Attrappe auf einem
+   freien Port startet und die empfangenen Nachrichten samt Status
+   zurückgibt.
 
 Grenzen: keine Simulation von Licht oder Cue-Zuständen. Die Liste der
-bekannten Adressen kommt aus zeros-osc, nicht aus einer zweiten Kopie.
+bekannten Adressen und ihr Status kommen aus zeros-osc, nicht aus einer
+zweiten Kopie. Ändere die Befehlstabelle in docs/02 nicht.
 
 Fertig, wenn: Tests alle vier Schreibweisen von "Cue 5 auf Playback 1"
-als gleichwertig erkennen und die drei Ablehnungsgründe abdecken, und
-das README des Pakets Start und Fixture mit je einem Beispiel zeigt.
+als gleichwertig erkennen, die drei Ablehnungsgründe abdecken und für
+je einen Befehl mit Status belegt, Forum und vermutet den Status im
+Ergebnis prüfen; das README des Pakets Start und Fixture mit je einem
+Beispiel zeigt; und die CI des Pull Requests grün ist.
 ```

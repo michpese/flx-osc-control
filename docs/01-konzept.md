@@ -12,7 +12,7 @@ Ableton Live ── MIDI, Kanal 16 ──┘                                  �
 ```
 
 Die Pfeile laufen nur in eine Richtung: Das Pult meldet nichts zurück.
-Stehen ProPresenter und Ableton auf zwei Rechnern, läuft die Bridge auf beiden mit derselben `mapping.yaml`.
+ProPresenter läuft auf einem Windows-PC, Ableton auf einem Mac. Die Bridge läuft deshalb auf beiden Rechnern mit derselben `mapping.yaml`: unter Windows mit loopMIDI, auf dem Mac mit dem IAC-Treiber.
 
 ## Warum dieser Weg
 

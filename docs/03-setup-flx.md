@@ -13,8 +13,8 @@ Vor dem ersten Trigger brauchst du drei Dinge: ein sauberes Netz, das eingeschal
 | Gerät | IP-Adresse (Vorschlag) | Subnetz |
 | --- | --- | --- |
 | FLX S24 | 192.168.1.10 | 255.255.255.0 |
-| ProPresenter-Rechner | 192.168.1.20 | 255.255.255.0 |
-| Ableton-Rechner | 192.168.1.21 | 255.255.255.0 |
+| ProPresenter-Rechner (Windows) | 192.168.1.20 | 255.255.255.0 |
+| Ableton-Rechner (Mac) | 192.168.1.21 | 255.255.255.0 |
 
 Der Plan ist ein Vorschlag. Prüfe die tatsächliche Adresse des Pults in Setup und trage die echten Werte hier ein.
 
@@ -59,7 +59,7 @@ Beispiel für ein Steuer-Playback:
 
 Der Port heißt auf jedem Rechner „LX Bridge".
 
-**macOS**
+**macOS** (Ableton-Rechner)
 
 1. Programm „Audio-MIDI-Setup" öffnen.
 2. Fenster → MIDI-Studio einblenden.
@@ -67,7 +67,7 @@ Der Port heißt auf jedem Rechner „LX Bridge".
 4. „Gerät ist online" aktivieren.
 5. Einen Port mit dem Namen „LX Bridge" anlegen.
 
-**Windows**
+**Windows** (ProPresenter-Rechner)
 
 1. loopMIDI installieren.
 2. Einen Port mit dem Namen „LX Bridge" anlegen.

@@ -21,14 +21,33 @@ Opus 5.5 kennt fünf Stufen: `low`, `medium`, `high`, `xhigh` und `max`. `medium
 ## Arbeitsweise
 
 - **Ein Prompt pro Paket, eine neue Sitzung pro Prompt.** So bleibt der Kontext klein.
-- **Ein Branch pro Prompt,** am Ende ein Pull Request.
+- **Ein Branch pro Prompt,** von aktuellem `main`, am Ende ein Pull Request.
 - **Erst die Referenz, dann Code.** Jeder Prompt lässt Opus `CLAUDE.md` und `docs/02` lesen.
 - **Nichts erfinden lassen.** Adressen kommen nur aus `docs/02-flx-osc-referenz.md`.
 - **Abnahme steht im Prompt.** Jeder Prompt endet mit „Fertig, wenn …".
 
-## Vor Prompt 2
+## Vor jedem Prompt
 
-Trage die offenen Befehle in `docs/02-flx-osc-referenz.md` ein, soweit du sie brauchst. Was dort auf „offen" steht, baut Opus nicht.
+1. Der Pull Request des vorigen Prompts ist gemergt. Jeder Prompt baut auf `main` auf.
+2. Lokal auf den neuen Stand gehen: `git switch main && git pull`.
+3. Neuen Branch anlegen, zum Beispiel `git switch -c feat/mock-console`.
+4. Erst dann die Opus-Sitzung im Repo-Ordner starten.
+
+Beim Mergen „Create a merge commit" wählen, nicht „Squash". Baut doch einmal ein Branch auf einem ungemergten auf, vermeidet das Konflikte.
+
+## Was die Umgebung können muss
+
+| Fähigkeit | Wofür | Wenn sie fehlt |
+| --- | --- | --- |
+| Zugriff auf PyPI | Abhängigkeiten installieren, Tests mit den echten Paketen | Opus meldet es; maßgeblich ist dann die CI des Pull Requests |
+| Zugriff auf GitHub | pushen, Pull Request öffnen | selbst im Terminal: `git push -u origin <branch>` |
+| Dateien löschen im Repo-Ordner | Git ersetzt beim Branch-Wechsel und Commit Dateien | Branch-Wechsel und Commits selbst im Terminal machen |
+
+„Fertig" ist ein Paket erst, wenn die CI des Pull Requests grün ist. Sie läuft auf macOS und Windows mit den echten Abhängigkeiten.
+
+## Stand der Referenz
+
+Die Befehlstabelle in `docs/02-flx-osc-referenz.md` ändert nur ein Mensch. Was dort auf „offen" steht, baut Opus nicht. Was auf „vermutet" steht, baut Opus mit sichtbarem Hinweis. Stufe einen Befehl erst auf „belegt" hoch, wenn du die Schreibweise im ZerOS-Handbuch nachgelesen hast, und passe dann die Konstante in `packages/zeros-osc/src/zeros_osc/commands.py` im selben Schritt an.
 
 ## So benutzt du eine Datei
 

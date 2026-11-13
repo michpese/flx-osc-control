@@ -2,6 +2,7 @@
 
 Every command in this module comes from ``docs/02-flx-osc-referenz.md``.
 Nothing else may be added here. Commands with status "offen" are not included.
+Commands with status "vermutet" are included but flagged: their spelling has no source.
 
 All builders return the address in the form "everything in the path, no
 arguments", e.g. ``/zeros/cue/go/10/2``.
@@ -31,10 +32,16 @@ class Status(Enum):
 
     BELEGT = "belegt"  # documented in the ZerOS manual
     FORUM = "Forum"  # only mentioned in the vendor forum -> "ungetestet"
+    VERMUTET = "vermutet"  # entered without a source -> "ungetestet", spelling unconfirmed
 
     @property
     def untested(self) -> bool:
-        return self is Status.FORUM
+        return self is not Status.BELEGT
+
+    @property
+    def unconfirmed(self) -> bool:
+        """The spelling itself has no source (stronger than untested)."""
+        return self is Status.VERMUTET
 
 
 # --- value normalisers ---------------------------------------------------------
@@ -228,7 +235,7 @@ COMMANDS: dict[str, Command] = {
             ("zeros", "cue", "pause"),
             (PLAYBACK,),
             (),
-            Status.FORUM,
+            Status.VERMUTET,
             "/zeros/cue/pause/1",
             ("cue", "pause"),
         ),
@@ -238,7 +245,7 @@ COMMANDS: dict[str, Command] = {
             ("zeros", "cue", "next"),
             (PLAYBACK, CUE),
             (),
-            Status.FORUM,
+            Status.VERMUTET,
             "/zeros/cue/next/1/6",
             ("cue", "next"),
         ),
@@ -248,7 +255,7 @@ COMMANDS: dict[str, Command] = {
             ("zeros", "playback", "go"),
             (PLAYBACK,),
             (),
-            Status.FORUM,
+            Status.VERMUTET,
             "/zeros/playback/go/1",
             ("playback", "go"),
         ),
@@ -258,7 +265,7 @@ COMMANDS: dict[str, Command] = {
             ("zeros", "playback", "pause"),
             (PLAYBACK,),
             (),
-            Status.FORUM,
+            Status.VERMUTET,
             "/zeros/playback/pause/1",
             ("playback", "pause"),
         ),
@@ -268,7 +275,7 @@ COMMANDS: dict[str, Command] = {
             ("zeros", "playback", "level"),
             (PLAYBACK, LEVEL),
             (FADE,),
-            Status.FORUM,
+            Status.VERMUTET,
             "/zeros/playback/level/1/100",
             ("playback", "level"),
         ),
@@ -278,7 +285,7 @@ COMMANDS: dict[str, Command] = {
             ("zeros", "playback", "release"),
             (PLAYBACK,),
             (),
-            Status.FORUM,
+            Status.VERMUTET,
             "/zeros/playback/release/1",
             ("playback", "release"),
         ),
@@ -288,7 +295,7 @@ COMMANDS: dict[str, Command] = {
             ("zeros", "playback", "view"),
             (PLAYBACK,),
             (),
-            Status.FORUM,
+            Status.VERMUTET,
             "/zeros/playback/view/1",
             ("playback", "view"),
         ),
@@ -298,7 +305,7 @@ COMMANDS: dict[str, Command] = {
             ("zeros", "grandmaster"),
             (LEVEL,),
             (FADE,),
-            Status.FORUM,
+            Status.VERMUTET,
             "/zeros/grandmaster/100",
             ("grandmaster",),
         ),
@@ -308,7 +315,7 @@ COMMANDS: dict[str, Command] = {
             ("zeros", "blackout"),
             (BLACKOUT,),
             (),
-            Status.FORUM,
+            Status.VERMUTET,
             "/zeros/blackout/1",
             ("blackout",),
         ),
@@ -340,47 +347,47 @@ def macro(number: object) -> str:
 
 
 def cue_pause(playback: object) -> str:
-    """Pause a cue: /zeros/cue/pause/<playback> (Forum, untested)."""
+    """Pause a cue: /zeros/cue/pause/<playback> (vermutet, untested)."""
     return COMMANDS["cue_pause"].build(playback)
 
 
 def cue_next(playback: object, cue: object) -> str:
-    """Preselect the next cue: /zeros/cue/next/<playback>/<cue> (Forum, untested)."""
+    """Preselect the next cue: /zeros/cue/next/<playback>/<cue> (vermutet, untested)."""
     return COMMANDS["cue_next"].build(playback, cue)
 
 
 def playback_go(playback: object) -> str:
-    """Go on a playback: /zeros/playback/go/<playback> (Forum, untested)."""
+    """Go on a playback: /zeros/playback/go/<playback> (vermutet, untested)."""
     return COMMANDS["playback_go"].build(playback)
 
 
 def playback_pause(playback: object) -> str:
-    """Pause a playback: /zeros/playback/pause/<playback> (Forum, untested)."""
+    """Pause a playback: /zeros/playback/pause/<playback> (vermutet, untested)."""
     return COMMANDS["playback_pause"].build(playback)
 
 
 def playback_level(playback: object, level: object, fade: object | None = None) -> str:
-    """Set a playback level: /zeros/playback/level/<playback>/<level>[/<fade>] (Forum)."""
+    """Set a playback level: /zeros/playback/level/<playback>/<level>[/<fade>] (vermutet)."""
     return COMMANDS["playback_level"].build(playback, level, fade)
 
 
 def playback_release(playback: object) -> str:
-    """Release a playback: /zeros/playback/release/<playback> (Forum, untested)."""
+    """Release a playback: /zeros/playback/release/<playback> (vermutet, untested)."""
     return COMMANDS["playback_release"].build(playback)
 
 
 def playback_view(playback: object) -> str:
-    """View a playback: /zeros/playback/view/<playback> (Forum, untested)."""
+    """View a playback: /zeros/playback/view/<playback> (vermutet, untested)."""
     return COMMANDS["playback_view"].build(playback)
 
 
 def grand_master(level: object, fade: object | None = None) -> str:
-    """Set the grand master: /zeros/grandmaster/<level>[/<fade>] (Forum, untested)."""
+    """Set the grand master: /zeros/grandmaster/<level>[/<fade>] (vermutet, untested)."""
     return COMMANDS["grand_master"].build(level, fade)
 
 
 def blackout(value: object) -> str:
-    """Switch blackout: /zeros/blackout/<1|0> (Forum, untested)."""
+    """Switch blackout: /zeros/blackout/<1|0> (vermutet, untested)."""
     return COMMANDS["blackout"].build(value)
 
 
@@ -435,8 +442,13 @@ def match_address(address: str) -> Match:
 def address_warnings(match: Match) -> list[str]:
     """Known caveats from the reference for a matched address (German)."""
     notes: list[str] = []
-    if match.command.status.untested:
-        notes.append(f"{match.command.id} ist ungetestet (Status Forum)")
+    status = match.command.status
+    if status.unconfirmed:
+        notes.append(
+            f"{match.command.id} ist ungetestet (Status vermutet, Schreibweise nicht belegt)"
+        )
+    elif status.untested:
+        notes.append(f"{match.command.id} ist ungetestet (Status {status.value})")
     if match.command.id == "cue_go" and match.values[0] == "0":
         notes.append(
             "Playback 0 (Master): laut Forum auf einem FLX S48 ignoriert, in Teststufe 2 prüfen"
