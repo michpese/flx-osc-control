@@ -40,7 +40,7 @@ Beim Mergen „Create a merge commit" wählen, nicht „Squash". Baut doch einma
 | Fähigkeit | Wofür | Wenn sie fehlt |
 | --- | --- | --- |
 | Zugriff auf PyPI | Abhängigkeiten installieren, Tests mit den echten Paketen | Opus meldet es; maßgeblich ist dann die CI des Pull Requests |
-| Zugriff auf GitHub | pushen, Pull Request öffnen | selbst im Terminal: `git push -u origin <branch>` |
+| Zugriff auf GitHub | pushen, Pull Request öffnen | Opus baut und committet lokal weiter; du pushst selbst im Terminal: `git push -u origin <branch>` |
 | Dateien löschen im Repo-Ordner | Git ersetzt beim Branch-Wechsel und Commit Dateien | Branch-Wechsel und Commits selbst im Terminal machen |
 
 „Fertig" ist ein Paket erst, wenn die CI des Pull Requests grün ist. Sie läuft auf macOS und Windows mit den echten Abhängigkeiten.
