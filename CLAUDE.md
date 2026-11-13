@@ -38,15 +38,20 @@ Lies vor jeder Aufgabe `docs/01-konzept.md` und `docs/02-flx-osc-referenz.md`.
   lege davon einen Branch an. Fehlt auf `main` eine Vorarbeit, auf der die
   Aufgabe aufbaut: halte an und sage es, statt auf einem ungemergten Branch
   weiterzubauen.
+- Kein Zugriff auf GitHub ist kein Grund anzuhalten. Der Mensch holt `main`
+  vor der Sitzung selbst. Arbeite dann auf dem lokalen Stand, nenne zu Beginn
+  den Commit, von dem du startest, baue und committe lokal. Nenne am Ende die
+  Befehle zum Pushen und sage ausdrücklich, dass die CI noch aussteht.
 - Ein Branch pro Aufgabe, am Ende ein Pull Request gegen `main`.
 - „Fertig" heißt: die CI des Pull Requests ist grün. Sie läuft auf macOS und
-  Windows mit den echten Abhängigkeiten.
+  Windows mit den echten Abhängigkeiten. Kannst du sie nicht selbst sehen,
+  melde „lokal gebaut, CI steht aus" und nicht „fertig".
 - Lässt sich eine Abhängigkeit nicht installieren, melde es zuerst. Ersetze sie
   nicht durch einen Nachbau. Läuft ein Test nur mit einem Ersatz, nenne ihn
   ungeprüft und nicht grün.
-- Kannst du in deiner Umgebung nicht pushen, keinen Branch wechseln oder keine
-  Dateien löschen: halte an, lass den Arbeitsordner wie er ist und nenne die
-  Befehle, die der Mensch im Terminal ausführen soll. Lege keine
+- Kannst du in deiner Umgebung keinen Branch wechseln, nicht committen oder
+  keine Dateien löschen: halte an, lass den Arbeitsordner wie er ist und nenne
+  die Befehle, die der Mensch im Terminal ausführen soll. Lege keine
   Ausweichordner an.
 - Ändert sich das Verhalten, wird das README des Pakets im selben Schritt angepasst.
 - Nenne am Ende jede Entscheidung, die der Auftrag offen ließ.
