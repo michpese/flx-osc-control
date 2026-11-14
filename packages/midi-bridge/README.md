@@ -2,7 +2,7 @@
 
 > **Stand:** Version 0.1.0. Gebaut und mit der `mock-console` getestet, noch nicht mit ProPresenter, Ableton oder dem Pult.
 
-Ein Dauerläufer, der MIDI-Noten in OSC-Befehle für das FLX S24 übersetzt. Gesendet wird ausschließlich über `zeros-osc` an `console.host` aus der `mapping.yaml`.
+Ein Dauerläufer, der MIDI-Noten in OSC-Befehle für das FLX S48 übersetzt. Gesendet wird ausschließlich über `zeros-osc` an `console.host` aus der `mapping.yaml`.
 
 ## Was es tut
 

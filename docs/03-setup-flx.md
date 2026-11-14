@@ -1,4 +1,4 @@
-# 03 – Einrichtung FLX S24 und Netzwerk
+# 03 – Einrichtung FLX S48 und Netzwerk
 
 Vor dem ersten Trigger brauchst du drei Dinge: ein sauberes Netz, das eingeschaltete OSC am Pult und feste Cue-Nummern im Showfile.
 
@@ -12,7 +12,7 @@ Vor dem ersten Trigger brauchst du drei Dinge: ein sauberes Netz, das eingeschal
 
 | Gerät | IP-Adresse (Vorschlag) | Subnetz |
 | --- | --- | --- |
-| FLX S24 | 192.168.1.10 | 255.255.255.0 |
+| FLX S48 | 192.168.1.10 | 255.255.255.0 |
 | ProPresenter-Rechner (Windows) | 192.168.1.20 | 255.255.255.0 |
 | Ableton-Rechner (Mac) | 192.168.1.21 | 255.255.255.0 |
 

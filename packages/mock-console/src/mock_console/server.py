@@ -1,4 +1,4 @@
-"""UDP listener that records and judges every OSC message, like an FLX S24 would.
+"""UDP listener that records and judges every OSC message, like an FLX S48 would.
 
 The mock never answers, just like the real console.
 """
@@ -118,7 +118,7 @@ def _jsonable(value: object) -> object:
 
 
 class MockConsole:
-    """Stand-in for the FLX S24: listens on UDP, logs and judges every message.
+    """Stand-in for the FLX S48: listens on UDP, logs and judges every message.
 
     Use as a context manager or call ``start()`` / ``stop()``. ``port=0`` picks
     a free port; the actual port is in ``.port`` after ``start()``.

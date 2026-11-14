@@ -1,7 +1,7 @@
 [project]
 name = "midi-bridge"
 version = "0.1.0"
-description = "Übersetzt MIDI-Noten in OSC-Befehle für das FLX S24"
+description = "Übersetzt MIDI-Noten in OSC-Befehle für das FLX S48"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

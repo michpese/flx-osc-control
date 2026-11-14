@@ -2,7 +2,7 @@
 
 > **Stand:** Version 0.1.0. Lauscht per UDP, protokolliert und bewertet jede Nachricht nach der Referenz. TCP (SLIP) wird nicht nachgebildet.
 
-Eine Attrappe des FLX S24 für Tests ohne Hardware.
+Eine Attrappe des FLX S48 für Tests ohne Hardware.
 
 ## Was es tut
 

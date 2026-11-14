@@ -57,8 +57,8 @@ def _command_description(command: Command) -> str:
         text += "Status: belegt (ZerOS-Handbuch).\n"
     if command.id == "cue_go":
         text += (
-            "Hinweis: Playback 0 (Master) wurde laut Forum auf einem FLX S48 "
-            "ignoriert; in Teststufe 2 prüfen.\n"
+            "Am Pult getestet: FLX S48, ZerOS 8.0.x, 14.11.2026, auch auf "
+            "Playback 0 (Master Playback).\n"
         )
     if command.id == "macro":
         text += (
@@ -105,7 +105,7 @@ def build_parser() -> argparse.ArgumentParser:
     common = _target_options()
     parser = argparse.ArgumentParser(
         prog="flxctl",
-        description="ZerOS-OSC-Befehle an ein Zero 88 FLX S24 senden und Mappings prüfen.",
+        description="ZerOS-OSC-Befehle an ein Zero 88 FLX S48 senden und Mappings prüfen.",
         epilog=EPILOG,
         parents=[common],
     )

@@ -16,7 +16,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="midi-bridge",
         description=(
-            "Übersetzt MIDI-Noten (Note On) in OSC-Befehle für das FLX S24 und sendet sie "
+            "Übersetzt MIDI-Noten (Note On) in OSC-Befehle für das FLX S48 und sendet sie "
             "über zeros-osc an console.host aus der mapping.yaml. Beenden mit Strg+C."
         ),
     )

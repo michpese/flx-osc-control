@@ -1,7 +1,7 @@
 [project]
 name = "mock-console"
 version = "0.1.0"
-description = "Attrappe des FLX S24 für Tests ohne Hardware"
+description = "Attrappe des FLX S48 für Tests ohne Hardware"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

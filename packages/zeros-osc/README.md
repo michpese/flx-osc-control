@@ -124,7 +124,7 @@ Die Einstellung muss zum Feld „Transport" am Pult passen. Beide Clients prüfe
 ## Grenzen
 
 - Nur Befehle, die in der Referenz stehen und nicht „offen" sind. Kurzform `/lx/...`, Wildcards und Argument-Schreibweisen werden nicht gesendet und von `map check` abgelehnt.
-- `/zeros/cue/go/0/<cue>` (Master Playback) ist erlaubt, `map check` gibt aber einen Hinweis aus: Laut Forum wurde das auf einem FLX S48 ignoriert.
+- `/zeros/cue/go/0/<cue>` (Master Playback) ist erlaubt und am 14.11.2026 auf dem FLX S48 mit ZerOS 8.0.x mit Wirkung getestet. Ein älterer Forumsbericht nannte das Gegenteil; `map check` gibt dafür keinen Hinweis mehr aus.
 - FLX-S-Pulte haben keine User-Makros, nur Fixture-Makros (siehe Referenz).
 
 ## Tests

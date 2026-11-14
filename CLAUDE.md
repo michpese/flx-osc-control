@@ -1,7 +1,7 @@
 # flx-osc-control
 
 Zweck: ProPresenter und Ableton lösen per MIDI-Note über eine Bridge
-OSC-Befehle auf einem Zero 88 FLX S24 (ZerOS ab 7.14) aus.
+OSC-Befehle auf einem Zero 88 FLX S48 (ZerOS ab 7.14) aus.
 
 Lies vor jeder Aufgabe `docs/01-konzept.md` und `docs/02-flx-osc-referenz.md`.
 

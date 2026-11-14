@@ -1,4 +1,4 @@
-"""ZerOS OSC commands for the FLX S24.
+"""ZerOS OSC commands for the FLX S48.
 
 Every command in this module comes from ``docs/02-flx-osc-referenz.md``.
 Nothing else may be added here. Commands with status "offen" are not included.
@@ -16,7 +16,7 @@ from decimal import Decimal, InvalidOperation
 from enum import Enum
 
 PLAYBACK_MIN = 0
-PLAYBACK_MAX = 96  # FLX S24: 97 playbacks, 0 is the master playback
+PLAYBACK_MAX = 96  # FLX S48: 97 playbacks, 0 is the master playback
 LEVEL_MIN = 0
 LEVEL_MAX = 100
 
@@ -459,8 +459,4 @@ def address_warnings(match: Match) -> list[str]:
         )
     elif status.untested:
         notes.append(f"{match.command.id} ist ungetestet (Status {status.value})")
-    if match.command.id == "cue_go" and match.values[0] == "0":
-        notes.append(
-            "Playback 0 (Master): laut Forum auf einem FLX S48 ignoriert, in Teststufe 2 prüfen"
-        )
     return notes
