@@ -228,7 +228,8 @@ def test_unsourced_commands_are_flagged_unconfirmed():
 
 def test_warnings():
     assert address_warnings(match_address("/zeros/cue/go/10/1")) == []
-    assert any("Playback 0" in w for w in address_warnings(match_address("/zeros/cue/go/0/4")))
+    # Playback 0 (master) was confirmed on the console on 2026-11-14: no warning.
+    assert address_warnings(match_address("/zeros/cue/go/0/4")) == []
     forum = address_warnings(match_address("/zeros/macro/1"))
     assert any("ungetestet" in w and "Status Forum" in w for w in forum)
     assert not any("vermutet" in w for w in forum)

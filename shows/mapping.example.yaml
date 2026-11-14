@@ -1,4 +1,4 @@
-# Beispiel-Mapping: MIDI-Note -> OSC-Befehl für das FLX S24
+# Beispiel-Mapping: MIDI-Note -> OSC-Befehl für das FLX S48
 #
 # Kopiere diese Datei nach shows/<ort-oder-anlass>/mapping.yaml und passe sie an.
 # Schema und Regeln: docs/01-konzept.md

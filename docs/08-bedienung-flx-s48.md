@@ -17,7 +17,9 @@ Diese Anleitung erklärt die Arbeit am Pult selbst: Scheinwerfer einstellen, Cue
 | **View** | wechselt zwischen Cues- und Faders-Fenster; **Shift + View** zurück zum Output-Fenster |
 | **Z** | Schnellmenü: Save Show, Copy, Speed Override, Programmer Time, Lock |
 
-> **Achtung, Unstimmigkeit im Repo:** `docs/02` und `docs/03` sprechen vom FLX S24, nennen aber 97 Playbacks. Laut Handbuch hat der **S24 49 Playbacks**, der **S48 97**. Bitte klären, welches Pult im Einsatz ist, und `docs/02` von Hand korrigieren.
+Im Einsatz ist der **FLX S48**; so steht es seit dem Test vom 14.11.2026 auch in `docs/02` und `docs/03`. Der kleinere FLX S24 hat laut Handbuch nur 49 Playbacks.
+
+Die Playback-Nummer ist die Fader-Nummer: Playback 10 liegt auf Fader 10 der ersten Seite, Playback 58 auf Fader 10 der zweiten Seite. Diese Nummer steht später in der OSC-Adresse.
 
 ## Grundbegriffe
 
@@ -95,9 +97,25 @@ Standardwerte: Speed 25, Size 20, Offset 0, Rotation 0. Bei Intensity-, Colour-,
 3. Die Encoder zeigen jetzt **Up Fade, Up Delay, Down Fade, Down Delay**. Zeiten drehen oder die mittlere Encodertaste drücken und eintippen.
 4. Die **Go-Taste des Ziel-Playbacks** drücken, für das Master Playback die Taste ►.
 
-Der Cue landet hinten im Playback. Ein Punkt-Cue wie 5.5 liegt zwischen 5 und 6. So fügst du später etwas ein, ohne die Nummern zu verschieben.
+Der Cue landet hinten im Playback. Nach **Record** blinken die Tasten leerer Playbacks, belegte leuchten dauerhaft.
 
-> **Am Pult prüfen:** die Eingabe einer bestimmten Cue-Nummer beim Aufnehmen (**Record**, Nummer eintippen, Go-Taste). Das Handbuch beschreibt Punkt-Cues, nennt die Tastenfolge aber nicht wörtlich.
+Liegt auf dem Playback schon ein Cue, fragt das Pult, was geschehen soll. Laut einem Anwender-Leitfaden zu ZerOS 8 stehen dann **Overwrite**, **Merge**, **Create Cue 2**, **Create Chase** und **Cancel** zur Wahl. Für eine Cue-Liste ist **Create Cue 2** richtig; **Overwrite** ersetzt den vorhandenen Cue.
+
+### Cue mit einer bestimmten Nummer aufnehmen
+
+Für die Fernsteuerung zählt die Cue-Nummer, deshalb legst du sie besser selbst fest:
+
+1. Stimmung einstellen.
+2. **Record** antippen.
+3. **Z** drücken. Am Bildschirm erscheint ein Ziffernfeld.
+4. Die Cue-Nummer eintippen, zum Beispiel `3`.
+5. Die Taste des Ziel-Playbacks drücken.
+
+So nennt es der Hersteller-Support im Forum für FLX-S-Pulte. Mit einer USB-Tastatur geht die Zifferneingabe auch ohne **Z**. Ein Punkt-Cue wie 5.5 liegt zwischen 5 und 6; so fügst du später etwas ein, ohne Nummern zu verschieben.
+
+### Playback ansehen
+
+**View** halten und die Taste des Playbacks antippen. Das Playback-Fenster zeigt dann dessen Cue-Liste mit Nummern, Namen und Zeiten. Viele Aktionen wie **Update** und das Ändern von Zeiten wirken auf das gerade angezeigte Playback, deshalb zuerst das richtige anzeigen.
 
 ### Record-Fenster
 
@@ -216,13 +234,48 @@ Playbacks kopierst du mit **Z → Copy → Playback**, löschst sie mit **Delete
 
 ## Rezept: Steuer-Playback für ProPresenter und Ableton
 
-1. Playback 10 frei machen und benennen, zum Beispiel „Remote".
-2. Pro Stimmung: einstellen, Zeiten setzen, **Record**, Go-Taste von Playback 10.
-3. Cues ganzzahlig und in der Reihenfolge der Tabelle in `docs/03` anlegen.
-4. Cue-Namen vergeben, damit der Event Monitor lesbar bleibt.
-5. Lauflichter oder Effekte über „Macros" in den Cues verknüpfen.
-6. Showfile speichern (siehe unten) und unter `shows/<ort-oder-anlass>/` ins Repo legen.
-7. Jeden Cue einmal per `flxctl` auslösen und im Event Monitor kontrollieren (Teststufe 2 in `docs/06`).
+Am Ende liegt jede ferngesteuerte Stimmung als Cue mit fester Nummer auf einem Playback, und jede Nummer steht in der `mapping.yaml`. Das Beispiel nutzt Playback 10.
+
+**Vorbereiten**
+
+1. Mit **Fader Function** die Fader auf Playbacks stellen und mit **Page** die erste Seite wählen.
+2. Prüfen, dass Playback 10 leer ist: Nach **Record** blinkt seine Taste. Mit **Clear** brichst du wieder ab.
+3. Liste der Stimmungen mit Nummern bereitlegen, so wie sie in der `mapping.yaml` stehen sollen: 1 Einlass, 2 Musik ruhig, 3 Musik kräftig, 4 Rede.
+
+**Ersten Cue aufnehmen**
+
+4. **Clear** zweimal drücken.
+5. Die Stimmung „Einlass" einstellen.
+6. **Record** antippen, auf den Encodern die Zeiten einstellen, dann die Taste von Playback 10 drücken. Das ist Cue 1.
+
+**Weitere Cues aufnehmen**
+
+7. **Clear** zweimal drücken und die nächste Stimmung einstellen.
+8. **Record** antippen, **Z** drücken, die Cue-Nummer eintippen, dann die Taste von Playback 10 drücken.
+9. Für jede Stimmung der Liste wiederholen.
+
+**Kontrollieren und benennen**
+
+10. **View** halten und die Taste von Playback 10 antippen. Die Liste muss genau die geplanten Nummern zeigen.
+11. Jeden Cue per Doppeltipp auf das Feld „Name" benennen, mit demselben Namen wie in der `mapping.yaml`.
+12. Zeiten bei Bedarf in der Zeitzelle des Cues nachstellen.
+13. **Setup** halten und die Taste von Playback 10 drücken: unter „Stack Name" einen Namen wie „Remote" vergeben. **Renumber** dort nie benutzen.
+
+**Lauflichter und Effekte**
+
+14. Soll ein Cue ein Lauflicht starten oder beenden, in dessen Cue-Einstellungen unter „Macros" das Lauflicht-Playback verknüpfen.
+
+**Sichern und testen**
+
+15. Showfile speichern und unter `shows/<ort-oder-anlass>/` ins Repo legen.
+16. Den Fader von Playback 10 hochziehen. In der Standardfunktion „HTP Master" begrenzt er die Helligkeit.
+17. Jeden Cue einmal vom Rechner auslösen und am Pult kontrollieren:
+    ```bash
+    uv run flxctl --config shows/<ort>/mapping.yaml cue go 10 1
+    ```
+18. Ergebnis in die Tabelle der Teststufe 2 in `docs/06` eintragen.
+
+Das Master Playback (Playback 0) geht genauso; die Adresse lautet dann `/zeros/cue/go/0/<cue>`. Ein eigenes Fader-Playback hat den Vorteil, dass die Go-Taste des Master Playbacks für die Handbedienung frei bleibt.
 
 ## Master-Funktionen im Z-Menü
 
@@ -292,6 +345,9 @@ Laden überschreibt alles am Pult. Vorher die aktuelle Show sichern. **Load Comp
 - **Update landet im falschen Cue.** Der Cue war nicht grün im angezeigten Playback.
 - **Änderung taucht in späteren Cues auf.** Tracking. Mit **Cue Only** im Record-Fenster aufnehmen.
 - **Fader bewegt nichts.** **Fader Function** steht auf Kanälen statt Playbacks, oder falsche **Page**.
+- **Cue kommt per OSC an, aber es bleibt dunkel.** Zuerst den Fader des Steuer-Playbacks prüfen: Als „HTP Master" begrenzt er die Helligkeit. Dann im Playback-Fenster nachsehen, ob der Cue grün ist.
+- **Falscher Cue startet.** Die Cue-Nummer am Pult stimmt nicht mit der `mapping.yaml` überein. Playback mit **View** + Taste ansehen und vergleichen.
+- **Zweiter Cue hat den ersten ersetzt.** Bei der Rückfrage wurde **Overwrite** statt **Create Cue 2** gewählt.
 - **Lauflicht läuft nach dem Cue weiter.** Im Folge-Cue per „Macros" freigeben, ein „Release all" gibt es per OSC nicht (`docs/02`).
 - **Show lädt nicht vom Stick.** Stick ist exFAT formatiert.
 
@@ -301,3 +357,7 @@ Laden überschreibt alles am Pult. Vorher die aktuelle Show sichern. **Load Comp
 - [FLX S Bedienungsanleitung (deutsch, ZerOS 7.9.3)](https://images.static-thomann.de/pics/atg/atgdata/document/manual/zero88_flx_s_de.pdf)
 - [ZerOS 8.0.1 Release Notes](https://vari-lite.s3.eu-west-1.amazonaws.com/graphics/technical/documents/ZerOS-8.0.1-release-notes.pdf)
 - [ZerOS-Handbuch: Macros](https://www.zero88.com/manuals/zeros/macros)
+- [ZerOS-Handbuch als PDF](https://www.zero88.com/storage/downloads/manuals/zeros-en.pdf), für „View halten und Playback-Taste"
+- [Zero 88 Forum: Record a Cue with a Defined Number](https://www.zero88.com/forum/topic/8360-record-a-cue-with-a-defined-number/), Antwort des Hersteller-Supports
+- [Zero 88 Forum: FLX S24, new users](https://www.zero88.com/forum/topic/11976-flx-s24-new-users-being-driven-nuts/), Cue-Nummer über Record und Z
+- Anwender-Leitfaden „FLX S48 User Booklet, ZerOS 8" aus dem Zero 88 Forum, für die Rückfrage beim Aufnehmen auf ein belegtes Playback

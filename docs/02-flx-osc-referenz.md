@@ -1,4 +1,4 @@
-# 02 – OSC-Referenz FLX S24
+# 02 – OSC-Referenz FLX S48
 
 Diese Datei ist die **einzige Quelle** für OSC-Adressen in diesem Repo. Code, Mappings und Anleitungen verwenden nur, was hier steht.
 
@@ -14,7 +14,7 @@ Diese Datei ist die **einzige Quelle** für OSC-Adressen in diesem Repo. Code, M
 | Richtung | nur Empfang; das Pult sendet kein OSC |
 | Werte | stehen im Adresspfad; dieselben Werte als Argumente gehen auch |
 | Master Playback | Playback 0 |
-| Playbacks FLX S24 | 97, also Nummern 0 bis 96 |
+| Playbacks FLX S48 | 97, also Nummern 0 bis 96 (der FLX S24 hat laut Handbuch 49) |
 
 ## Status-Stufen
 
@@ -33,7 +33,7 @@ Ein Status wird nur von einem Menschen hochgestuft: auf „belegt", wenn die Sch
 
 | ID | Funktion | Adresse | Beispiel | Status | Am Pult getestet |
 | --- | --- | --- | --- | --- | --- |
-| `cue_go` | Cue auf einem Playback starten | `/zeros/cue/go/<playback>/<cue>` | `/zeros/cue/go/1/5` | belegt | |
+| `cue_go` | Cue auf einem Playback starten | `/zeros/cue/go/<playback>/<cue>` | `/zeros/cue/go/1/5` | belegt | 14.11.2026, FLX S48, ZerOS 8.0.x; auch auf Playback 0 |
 | `cue_go_current` | Cue im gerade angezeigten Playback starten | `/zeros/cue/go/<cue>` | `/zeros/cue/go/4` | Forum | |
 | `cue_go_next` | nächsten Cue starten | `/zeros/cue/go` | `/zeros/cue/go` | Forum | |
 | `macro` | Makro auslösen | `/zeros/macro/<nummer>` | `/zeros/macro/1` | Forum | |
@@ -48,6 +48,8 @@ Ein Status wird nur von einem Menschen hochgestuft: auf „belegt", wenn die Sch
 | `blackout` | Blackout schalten | `/zeros/blackout/<wert>` | `/zeros/blackout/1` *(an)* / `/zeros/blackout/0` *(aus)* | vermutet | |
 
 Die neun Befehle mit Status „vermutet" stehen ohne Quelle in dieser Tabelle. Ihre Herkunft ist nicht dokumentiert. Sie gelten als plausible Annahme, bis Teststufe 2 sie am Pult bestätigt oder widerlegt.
+
+Am 14.11.2026 wurden am FLX S48 auch Playback-Befehle mit Wirkung ausgelöst. Welche einzelnen es waren, ist nicht festgehalten. Ihre Zeilen bleiben deshalb leer, bis das nachgetragen ist.
 
 ### Wertebereiche und Einheiten
 
@@ -97,7 +99,7 @@ In beiden Fällen verwirft ZerOS die ganze Nachricht.
 ## Bekannte Eigenheiten
 
 - **Keine Rückmeldung.** UDP bestätigt nichts. Ein falscher Port sieht für den Sender genauso aus wie ein Erfolg. Kontrolle: Event Monitor am Pult.
-- **Master Playback.** Ein Anwender berichtet, dass `/zeros/cue/go/0/4` auf einem FLX S48 ignoriert wurde, `/zeros/cue/go/4` aber funktionierte. In Teststufe 2 prüfen.
+- **Master Playback.** `/zeros/cue/go/0/<cue>` funktioniert: am 14.11.2026 auf dem FLX S48 mit ZerOS 8.0.x getestet. Ein älterer Forumsbericht nannte das Gegenteil für `/zeros/cue/go/0/4`.
 - **Makros.** User-Makros gibt es auf FLX-S-Pulten nicht, nur Fixture-Makros. Die Steuerung baut deshalb auf Cues auf.
 - **Kein „Release all".** Laut Forum muss jedes Playback einzeln freigegeben werden.
 - **Nicht Teil der Schnittstelle:** einzelne Kanäle, Farben, Programmieren, Abfragen des Pultzustands.

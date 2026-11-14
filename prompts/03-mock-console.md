@@ -3,7 +3,7 @@
 **Effort:** `medium`
 
 ```text
-Baue das Paket mock-console: eine Attrappe des FLX S24 für Tests.
+Baue das Paket mock-console: eine Attrappe des FLX S48 für Tests.
 Lies CLAUDE.md, docs/02-flx-osc-referenz.md und
 packages/mock-console/README.md.
 

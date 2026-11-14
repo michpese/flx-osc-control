@@ -7,7 +7,7 @@ Getestet wird in sieben Stufen von innen nach außen: erst das Protokoll, dann d
 | Stufe | Geprüft wird | Womit | Bestanden, wenn |
 | --- | --- | --- | --- |
 | 0 Protokoll | Die Bridge erzeugt korrekte OSC-Pakete | `mock-console`, automatische Tests | jede Adresse aus `mapping.yaml` kommt unverändert an |
-| 1 Simulator | ZerOS versteht die Befehle | Phantom ZerOS als FLX S24, `flxctl` | der Event Monitor zeigt den Befehl ohne Fehler und der Cue läuft |
+| 1 Simulator | ZerOS versteht die Befehle | Phantom ZerOS als FLX S48, `flxctl` | der Event Monitor zeigt den Befehl ohne Fehler und der Cue läuft |
 | 2 Pult direkt | Netz und echte Hardware | `flxctl` vom Laptop | jeder Befehl der Referenz wurde einmal ausgelöst und das Ergebnis notiert |
 | 3 Quelle einzeln | ProPresenter → Bridge und Ableton → Bridge | Bridge-Log, OSC-Monitor, `mock-console` | eine Note erzeugt genau eine OSC-Nachricht |
 | 4 Ende zu Ende | Die ganze Kette mit echten Show-Dateien | Pult, ProPresenter, Ableton | Folie oder Clip löst den richtigen Cue aus, ohne spürbare Verzögerung |
@@ -17,9 +17,17 @@ Getestet wird in sieben Stufen von innen nach außen: erst das Protokoll, dann d
 ## Hinweise
 
 - **Stufe 1 ist ein offener Punkt.** Phantom ZerOS ist kostenlos und läuft auf Windows 10. Das Handbuch sagt nichts zu OSC im Simulator; im Herstellerforum beschreibt ein Anwender die OSC-Steuerung eines Phantom FLX S24. Prüfe das zuerst. Klappt es nicht, entfällt Stufe 1 und Stufe 2 wird gründlicher.
-- **Stufe 2 füllt die Referenz.** Hier bestätigst oder widerlegst du die vermuteten Schreibweisen aus [02-flx-osc-referenz.md](02-flx-osc-referenz.md) und klärst das Verhalten von Playback 0.
+- **Stufe 2 füllt die Referenz.** Hier bestätigst oder widerlegst du die vermuteten Schreibweisen aus [02-flx-osc-referenz.md](02-flx-osc-referenz.md). Playback 0 ist seit dem 14.11.2026 geklärt.
 - **Stufe 3 braucht kein Pult.** Die `mock-console` ersetzt es.
 - **Stufe 5 ist Pflicht.** Weil UDP nichts bestätigt, merkst du einen Ausfall nur am Licht.
+
+## Testprotokoll
+
+| Datum | Aufbau | Ergebnis |
+| --- | --- | --- |
+| 14.11.2026 | FLX S48, ZerOS 8.0.x. `flxctl` direkt ans Pult; Ableton am Mac → `midi-bridge` → Pult | Das Pult ließ sich steuern. `cue_go` wirkt auf Fader-Playbacks und auf Playback 0. Auch Playback-Befehle wirkten; welche einzelnen, ist nicht festgehalten. Der Portname am Mac musste im Mapping angepasst werden. ProPresenter war nicht beteiligt. |
+
+Offen aus diesem Test: die einzelnen Playback-Befehle mit Adresse nachtragen, den tatsächlichen Portnamen am Mac notieren, die Anzeige im Event Monitor festhalten.
 
 ## Stufe 2: Befehle am Pult
 
@@ -27,8 +35,8 @@ Für jeden Befehl der Referenz eine Zeile.
 
 | Befehl | Gesendete Adresse | Im Event Monitor | Wirkung am Pult | Datum |
 | --- | --- | --- | --- | --- |
-| `cue_go` | `/zeros/cue/go/10/1` | | | |
-| `cue_go` auf Playback 0 | `/zeros/cue/go/0/1` | | | |
+| `cue_go` | `/zeros/cue/go/<playback>/<cue>` | nicht festgehalten | Cue startet | 14.11.2026 |
+| `cue_go` auf Playback 0 | `/zeros/cue/go/0/<cue>` | nicht festgehalten | Cue startet | 14.11.2026 |
 | `cue_go_current` | `/zeros/cue/go/1` | | | |
 | `cue_go_next` | `/zeros/cue/go` | | | |
 | `macro` | `/zeros/macro/1` | | | |

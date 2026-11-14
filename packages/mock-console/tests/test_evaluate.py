@@ -92,10 +92,11 @@ def test_status_comes_from_zeros_osc():
         assert verdict.status is command.status
 
 
-def test_master_playback_warning_from_reference():
+def test_master_playback_is_accepted_without_warning():
+    # Confirmed on the console on 2026-11-14 (FLX S48, ZerOS 8.0.x).
     verdict = evaluate_message("/zeros/cue/go/0/4")
     assert verdict.accepted
-    assert any("Playback 0" in n for n in verdict.notes)
+    assert verdict.notes == ()
 
 
 # --- the three reasons for ignoring ------------------------------------------------

@@ -1,14 +1,14 @@
 # flx-osc-control
 
-Lichtstimmungen auf einem **Zero 88 FLX S24** aus **ProPresenter** und **Ableton Live** auslösen – über MIDI-Noten, eine kleine Bridge und OSC (Open Sound Control).
+Lichtstimmungen auf einem **Zero 88 FLX S48** aus **ProPresenter** und **Ableton Live** auslösen – über MIDI-Noten, eine kleine Bridge und OSC (Open Sound Control).
 
-> **Stand:** `zeros-osc`, `mock-console` und `midi-bridge` sind gebaut und in der CI getestet. Am Pult, mit ProPresenter und mit Ableton ist noch nichts getestet. Wie du baust und testest, steht unter [Bauen und testen](#bauen-und-testen--schritt-für-schritt).
+> **Stand:** `zeros-osc`, `mock-console` und `midi-bridge` sind gebaut und in der CI getestet. Am 14.11.2026 lief der erste Test am Pult (FLX S48, ZerOS 8.0.x): Mit `flxctl` und über Ableton, `midi-bridge` und OSC ließ es sich steuern. Mit ProPresenter ist noch nichts getestet. Wie du baust und testest, steht unter [Bauen und testen](#bauen-und-testen--schritt-für-schritt).
 
 ## So funktioniert es
 
 ```text
 ProPresenter ── MIDI, Kanal 15 ──┐
-                                 ├──► MIDI-Port „LX Bridge" ──► midi-bridge ── OSC über UDP 8830 ──► FLX S24
+                                 ├──► MIDI-Port „LX Bridge" ──► midi-bridge ── OSC über UDP 8830 ──► FLX S48
 Ableton Live ── MIDI, Kanal 16 ──┘                                  ▲
                                                                mapping.yaml
 ```
@@ -44,6 +44,7 @@ Warum der Umweg über MIDI? Das Pult empfängt OSC, aber ProPresenter kann kein 
 | [05-setup-ableton.md](docs/05-setup-ableton.md) | Einstellungen in Ableton Live |
 | [06-testplan.md](docs/06-testplan.md) | sieben Teststufen mit Protokoll zum Ausfüllen |
 | [07-betrieb-checkliste.md](docs/07-betrieb-checkliste.md) | Start-Checkliste und Notfallplan für den Einsatz |
+| [08-bedienung-flx-s48.md](docs/08-bedienung-flx-s48.md) | Bedienung des Pults: Cues aufnehmen, Steuer-Playback einrichten, Showfiles |
 
 ## Die Programme
 
@@ -64,13 +65,13 @@ Technik: Python ab 3.11 mit `python-osc`, `mido` samt `python-rtmidi`, `PyYAML` 
 | Bauen und alle automatischen Tests | ein Rechner mit Windows, macOS oder Linux, Internet, [Git](https://git-scm.com/) und [uv](https://docs.astral.sh/uv/) | frei |
 | Test mit MIDI, noch ohne Show-Programme | zusätzlich ein virtueller MIDI-Port: unter Windows das Programm loopMIDI, am Mac der eingebaute IAC-Treiber | frei |
 | Test mit den Show-Programmen | ProPresenter mit MIDI-Gerät (Windows-PC), Ableton Live (Mac) | vorhanden |
-| Test am Pult | FLX S24 mit ZerOS ab 7.14, Netzwerk-Switch, Netzwerkkabel | vorhanden |
+| Test am Pult | FLX S48 mit ZerOS ab 7.14, Netzwerk-Switch, Netzwerkkabel | vorhanden |
 
 Python musst du nicht selbst installieren. uv lädt eine passende Version.
 
 ## Bauen und testen – Schritt für Schritt
 
-Die Anleitung hat vier Stufen. **Stufe A und B gehen ohne Pult, ohne ProPresenter und ohne Ableton.** Jeder Befehl in Stufe A ist auf einem Linux-Rechner ausgeführt worden; die gezeigte Ausgabe stammt aus diesen Läufen. Stufe B bis D sind bisher an keinem echten Gerät gelaufen.
+Die Anleitung hat vier Stufen. **Stufe A und B gehen ohne Pult, ohne ProPresenter und ohne Ableton.** Jeder Befehl in Stufe A ist auf einem Linux-Rechner ausgeführt worden; die gezeigte Ausgabe stammt aus diesen Läufen. Stufe B und C sind in dieser Form noch nicht nachvollzogen; Stufe D lief am 14.11.2026 mit Ableton am Mac, das Protokoll steht in [docs/06-testplan.md](docs/06-testplan.md).
 
 Alle Befehle gelten für die PowerShell unter Windows und für das Terminal unter macOS und Linux.
 
@@ -288,11 +289,11 @@ Stand nach zwei Prüfberichten vom 13.11.2026. Bis die Punkte behoben oder am Ge
 
 - **`mapping.yaml` immer als UTF-8 speichern.** Eine Datei in anderer Kodierung, etwa ANSI aus dem Windows-Editor, lehnen `flxctl` und die Bridge mit einer Fehlermeldung ab; die laufende Bridge behält dann das alte Mapping.
 - **UDP verwenden,** nicht `tcp-slip`. Der TCP-Client erkennt eine vom Pult geschlossene Verbindung jetzt vor dem Senden und verbindet neu. Bricht die Verbindung ohne sauberes Schließen ab, etwa bei gezogenem Kabel, kann die erste Note danach weiterhin verloren gehen. Mit dem Pult ist TCP nicht getestet.
-- **Am Mac den Portnamen aus `--list-ports` eintragen.** „LX Bridge" allein passt dort vermutlich nicht.
+- **Am Mac den Portnamen aus `--list-ports` eintragen.** „LX Bridge" allein passt dort nicht; das hat der Test am 14.11.2026 bestätigt.
 - **Unter Windows nicht ins Fenster der Bridge klicken.** Markierter Text hält dort vermutlich die Ausgabe und damit die Bridge an.
 - **Nur eine Bridge je Rechner starten.** Zwei senden jede Note doppelt.
 - **Keinen zweiten MIDI-Port anlegen, dessen Name mit „LX Bridge" beginnt.** Die Bridge öffnet dann keinen.
-- **Kein Befehl ist bisher am Pult getestet.** Neun stehen auf „vermutet". Im Einsatz nur verwenden, was Teststufe 2 bestätigt hat; das Beispiel-Mapping nutzt nur den belegten Befehl `cue go`.
+- **Am Pult bestätigt ist bisher nur `cue go`,** auch auf Playback 0. Neun Befehle stehen auf „vermutet". Im Einsatz nur verwenden, was in [docs/02](docs/02-flx-osc-referenz.md) in der Spalte „Am Pult getestet" steht; das Beispiel-Mapping nutzt nur `cue go`.
 
 ## Entwicklung
 
@@ -312,7 +313,9 @@ Die CI (`.github/workflows/ci.yml`) führt dieselben Schritte auf macOS und Wind
 - [ ] Die neun Befehle mit Status „vermutet" (Cue Pause und Next, Playback Go, Pause, Level, Release und View, Grand Master, Blackout) mit dem ZerOS-Handbuch abgleichen und am Pult testen
 - [ ] Tatsächliche IP-Adresse des Pults und die OSC-Adresseinstellung prüfen
 - [ ] Prüfen, ob Phantom ZerOS OSC empfängt
-- [ ] Prüfen, ob `/zeros/cue/go/0/<cue>` auf dem Master Playback funktioniert
+- [x] `/zeros/cue/go/0/<cue>` funktioniert auf dem Master Playback (14.11.2026, FLX S48, ZerOS 8.0.x)
+- [ ] Nachtragen, welche Playback-Befehle am 14.11.2026 getestet wurden, und den Portnamen am Mac notieren
+- [ ] Test mit ProPresenter am Windows-PC
 - [x] Geklärt: ProPresenter läuft auf einem Windows-PC, Ableton auf einem Mac; die Bridge läuft auf beiden
 - [ ] Klären, welche Ableton-Edition vorhanden ist und ob Max for Live dabei ist
 - [ ] Klären, ob in der ProPresenter-Lizenz MIDI-Geräte verfügbar sind

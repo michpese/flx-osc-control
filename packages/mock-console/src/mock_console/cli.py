@@ -16,7 +16,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="mock-console",
         description=(
-            "Attrappe des FLX S24: lauscht per UDP, schreibt jede OSC-Nachricht ins Log "
+            "Attrappe des FLX S48: lauscht per UDP, schreibt jede OSC-Nachricht ins Log "
             "und bewertet sie nach docs/02-flx-osc-referenz.md. Simuliert kein Licht "
             "und keine Cue-Zustände und antwortet nie."
         ),

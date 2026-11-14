@@ -1,12 +1,12 @@
 # 01 – Konzept
 
-ProPresenter und Ableton senden MIDI-Noten an eine kleine Bridge, die daraus OSC-Befehle für das FLX S24 macht.
+ProPresenter und Ableton senden MIDI-Noten an eine kleine Bridge, die daraus OSC-Befehle für das FLX S48 macht.
 
 ## Zielbild
 
 ```text
 ProPresenter ── MIDI, Kanal 15 ──┐
-                                 ├──► MIDI-Port „LX Bridge" ──► midi-bridge ── OSC über UDP 8830 ──► FLX S24
+                                 ├──► MIDI-Port „LX Bridge" ──► midi-bridge ── OSC über UDP 8830 ──► FLX S48
 Ableton Live ── MIDI, Kanal 16 ──┘                                  ▲
                                                                mapping.yaml
 ```
@@ -16,7 +16,7 @@ ProPresenter läuft auf einem Windows-PC, Ableton auf einem Mac. Die Bridge läu
 
 ## Warum dieser Weg
 
-- Das FLX S24 empfängt OSC ab ZerOS 7.14.
+- Das FLX S48 empfängt OSC ab ZerOS 7.14.
 - ProPresenter kann kein OSC senden. Als Ausgabe an Fremdgeräte bleibt MIDI; unter Windows ist MIDI das einzige verfügbare Gerät.
 - Ableton sendet OSC nur über Max for Live. MIDI-Noten sendet jede Edition.
 - Ein gemeinsamer Weg bedeutet: ein Werkzeug, eine Mapping-Datei, ein Testaufbau.
