@@ -30,6 +30,13 @@ from zeros_osc import (
 from zeros_osc.client import TRANSPORTS
 from zeros_osc.commands import norm_cue, norm_fade, norm_level, norm_playback
 
+from .i18n import (
+    STANDARD_OFF_LABELS,
+    STANDARD_ON_LABELS,
+    SUPPORTED_LANGUAGES,
+    tr,
+)
+
 MAX_BUTTONS = 12
 
 ACCENT_COLORS = ("amber", "emerald", "blue", "violet", "rose", "cyan", "slate")
@@ -75,15 +82,19 @@ class UiConfig:
     window_mode: str = "normal"
     show_all_off: bool = True
     startup_delay_s: float = 2.0
+    language: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
-        return {
+        out: dict[str, Any] = {
             "start_locked": self.start_locked,
             "always_on_top": self.always_on_top,
             "window_mode": self.window_mode,
             "show_all_off": self.show_all_off,
             "startup_delay_s": self.startup_delay_s,
         }
+        if self.language in SUPPORTED_LANGUAGES:
+            out["language"] = self.language
+        return out
 
 
 @dataclass
@@ -123,6 +134,18 @@ class ButtonConfig:
     on_commands: tuple[str, ...] = ()
     off_commands: tuple[str, ...] = ()
 
+    def display_on_label(self, lang: str = "de") -> str:
+        """Return localized standard ON label or user-customized text."""
+        if not self.on_label or self.on_label.strip().upper() in STANDARD_ON_LABELS:
+            return tr(lang, "default_on")
+        return self.on_label
+
+    def display_off_label(self, lang: str = "de") -> str:
+        """Return localized standard OFF label or user-customized text."""
+        if not self.off_label or self.off_label.strip().upper() in STANDARD_OFF_LABELS:
+            return tr(lang, "default_off")
+        return self.off_label
+
     def resolve_on_commands(self) -> list[str]:
         """Build and validate all OSC addresses sent when pressing ON."""
         if self.mode == "playback_level":
@@ -161,25 +184,25 @@ class ButtonConfig:
             return list(self.off_commands)
         raise ZerosValueError(f"Unbekannter Modus {self.mode!r}")
 
-    def badge_text(self) -> str:
+    def badge_text(self, lang: str = "de") -> str:
         """Compact technical summary shown on the button card."""
         if self.mode == "playback_level":
             fade_part = ""
             if self.on_fade is not None and self.on_fade == self.off_fade:
-                fade_part = f" · {self.on_fade}s"
+                fade_part = f" | {self.on_fade}s"
             elif self.on_fade is not None or self.off_fade is not None:
-                fade_part = f" · {self.on_fade or '-'}s/{self.off_fade or '-'}s"
-            return f"PB {self.playback} · {self.on_level}% / {self.off_level}%{fade_part}"
+                fade_part = f" | {self.on_fade or '-'}s/{self.off_fade or '-'}s"
+            return f"PB {self.playback} | {self.on_level}% / {self.off_level}%{fade_part}"
         if self.mode == "playback_go_release":
             action = "Release" if self.off_action == "release" else "Pause"
-            return f"PB {self.playback} · Go / {action}"
+            return f"PB {self.playback} | Go / {action}"
         if self.mode == "cue_pair":
-            return f"PB {self.playback} · Cue {self.on_cue} / {self.off_cue}"
+            return f"PB {self.playback} | Cue {self.on_cue} / {self.off_cue}"
         total_on = len(self.on_commands)
         total_off = len(self.off_commands)
         if total_on == 1 and total_off == 1:
-            return "Frei · 1 / 1 Befehl"
-        return f"Frei · {total_on} / {total_off} Befehle"
+            return tr(lang, "badge_custom_one")
+        return tr(lang, "badge_custom_many", on=total_on, off=total_off)
 
     def status_tags(self) -> list[str]:
         """Collect unique non-confirmed status tags (e.g. 'vermutet', 'ungetestet')."""
@@ -411,6 +434,15 @@ def parse_config(data: Any) -> tuple[PanelConfig | None, CheckResult]:
                 err(f"ui.startup_delay_s muss eine Zahl von 0 bis 300 sein, ist {delay!r}")
             else:
                 ui_cfg.startup_delay_s = float(delay)
+        if "language" in ui_raw and ui_raw["language"] is not None:
+            lang_val = ui_raw["language"]
+            if lang_val not in SUPPORTED_LANGUAGES:
+                err(
+                    f"ui.language muss einer von {', '.join(SUPPORTED_LANGUAGES)} sein, "
+                    f"ist {lang_val!r}"
+                )
+            else:
+                ui_cfg.language = lang_val
 
     # buttons
     buttons_raw = data.get("buttons")
@@ -698,10 +730,12 @@ def save_config(config: PanelConfig, path: str | Path) -> None:
         raise
 
 
-def default_starter_config(host: str = "192.168.1.10") -> PanelConfig:
+def default_starter_config(host: str = "192.168.1.10", lang: str = "de") -> PanelConfig:
     """Create a 4-button starter configuration for new shows or demo mode."""
+    on_lbl = tr(lang, "default_on")
+    off_lbl = tr(lang, "default_off")
     return PanelConfig(
-        title="Kleines Event - Lichtsteuerung",
+        title=tr(lang, "starter_title"),
         console=ConsoleConfig(host=host, port=DEFAULT_PORT, transport="udp"),
         ui=UiConfig(
             start_locked=False,
@@ -713,10 +747,12 @@ def default_starter_config(host: str = "192.168.1.10") -> PanelConfig:
         buttons=[
             ButtonConfig(
                 id="pb_front",
-                name="Bühne Grundlicht",
-                description="Warmweißes Frontlicht für Moderation und Redner",
+                name=tr(lang, "starter_b1_name"),
+                description=tr(lang, "starter_b1_desc"),
                 color="amber",
                 mode="playback_level",
+                on_label=on_lbl,
+                off_label=off_lbl,
                 playback=1,
                 on_level=100,
                 off_level=0,
@@ -725,10 +761,12 @@ def default_starter_config(host: str = "192.168.1.10") -> PanelConfig:
             ),
             ButtonConfig(
                 id="pb_atmo",
-                name="Hintergrund Ambiente",
-                description="Farbiges Rückwandlicht gedimmt auf 70 %",
+                name=tr(lang, "starter_b2_name"),
+                description=tr(lang, "starter_b2_desc"),
                 color="blue",
                 mode="playback_level",
+                on_label=on_lbl,
+                off_label=off_lbl,
                 playback=2,
                 on_level=70,
                 off_level=0,
@@ -737,10 +775,12 @@ def default_starter_config(host: str = "192.168.1.10") -> PanelConfig:
             ),
             ButtonConfig(
                 id="pb_hall",
-                name="Saallicht",
-                description="Publikumsbeleuchtung für Einlass und Pause",
+                name=tr(lang, "starter_b3_name"),
+                description=tr(lang, "starter_b3_desc"),
                 color="emerald",
                 mode="playback_level",
+                on_label=on_lbl,
+                off_label=off_lbl,
                 playback=3,
                 on_level=100,
                 off_level=0,
@@ -749,10 +789,12 @@ def default_starter_config(host: str = "192.168.1.10") -> PanelConfig:
             ),
             ButtonConfig(
                 id="cue_band",
-                name="Musik-Szene",
-                description="Startet Cue 1 (Ein) bzw. Cue 2 (Aus) auf Playback 10",
+                name=tr(lang, "starter_b4_name"),
+                description=tr(lang, "starter_b4_desc"),
                 color="violet",
                 mode="cue_pair",
+                on_label=on_lbl,
+                off_label=off_lbl,
                 playback=10,
                 on_cue="1",
                 off_cue="2",

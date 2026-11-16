@@ -57,6 +57,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="Konfigurationsdialog direkt beim Start öffnen",
     )
     parser.add_argument(
+        "--lang",
+        choices=("de", "en", "ro"),
+        help="Sprache der Oberfläche wählen: de (Deutsch), en (English), ro (Română)",
+    )
+    parser.add_argument(
         "--check",
         metavar="DATEI",
         help="Konfigurationsdatei ohne Oberfläche prüfen und beenden",
@@ -143,6 +148,10 @@ def main(
         return _handle_autostart(args.autostart, args.config, autostart_mgr, out_stream, err_stream)
 
     settings = AppSettings.load(app_data_dir)
+    if args.lang:
+        settings.language = args.lang
+        settings.save(app_data_dir)
+
     chosen_path: Path | None = None
     startup_error: str | None = None
 
@@ -160,6 +169,8 @@ def main(
             for warning in check_res.warnings:
                 print(f"Hinweis: {warning}", file=err_stream)
             settings.last_config_path = str(chosen_path.resolve())
+            if not args.lang and config.ui.language:
+                settings.language = config.ui.language
             settings.save(app_data_dir)
         except ZerosValueError as exc:
             startup_error = f"{chosen_path}: {exc}"
@@ -177,10 +188,10 @@ def main(
         app_data_dir=app_data_dir,
     )
 
+    from .i18n import tr
     from .ui.app import run_gui
 
     if startup_error is not None:
-        # Surface startup error in windowed mode once Tk initializes
         import tkinter as tk
         from tkinter import messagebox
 
@@ -201,7 +212,7 @@ def main(
         root.after(
             100,
             lambda: messagebox.showerror(
-                "Konfiguration konnte nicht geladen werden",
+                tr(settings.language, "dlg_err_load"),
                 startup_error or "",
                 parent=root,
             ),

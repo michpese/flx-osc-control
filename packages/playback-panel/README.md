@@ -97,12 +97,13 @@ Vorlage: [`shows/playbacks.example.yaml`](../../shows/playbacks.example.yaml). I
 | `ui.window_mode` | `normal` \| `maximized` \| `fullscreen` | nein | Fenstergröße beim Start (`F11` wechselt Vollbild, `Esc` verlässt Vollbild) |
 | `ui.show_all_off` | `bool` | nein | blendet „Alle Aus“ in der Kopfzeile ein (Standard `true`) |
 | `ui.startup_delay_s` | `0`–`300` | nein | Wartezeit in Sekunden vor `auto_on_at_startup` (Standard `2.0`) |
+| `ui.language` | `de` \| `en` \| `ro` | nein | Startsprache der Oberfläche (`Deutsch`, `English`, `Română`; auch live über `DE \| EN \| RO` umschaltbar) |
 | `buttons` | Liste (max. 12) | ja | konfigurierte Button-Plätze |
 | `buttons[].name` | Text | ja | Titel auf der Karte |
 | `buttons[].description` | Text | nein | Kurzbeschreibung unter dem Titel |
 | `buttons[].enabled` | `bool` | nein | `false` blendet den Platz im Bedienfenster aus (Standard `true`) |
 | `buttons[].color` | Text | nein | `amber`, `emerald`, `blue`, `violet`, `rose`, `cyan` oder `slate` |
-| `buttons[].on_label` / `off_label` | Text | nein | Beschriftung der Tasten (Standard `EIN` / `AUS`) |
+| `buttons[].on_label` / `off_label` | Text | nein | Beschriftung der Tasten (Standard `EIN`/`ON`/`PORNIT` bzw. `AUS`/`OFF`/`OPRIT` je nach Sprache) |
 | `buttons[].auto_on_at_startup` | `bool` | nein | sendet beim Programmstart automatisch den EIN-Befehl |
 | `buttons[].mode` | Text | nein | `playback_level` (Standard), `playback_go_release`, `cue_pair` oder `custom` |
 
@@ -116,7 +117,7 @@ Vorlage: [`shows/playbacks.example.yaml`](../../shows/playbacks.example.yaml). I
 ## Kommandozeilen-Optionen
 
 ```text
-flx-panel [--config DATEI] [--dry-run] [--locked] [--edit]
+flx-panel [--config DATEI] [--dry-run] [--locked] [--edit] [--lang {de,en,ro}]
 flx-panel --check DATEI
 flx-panel --autostart {status,enable,disable} [--config DATEI]
 flx-panel --version

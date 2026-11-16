@@ -141,3 +141,87 @@ def test_12_buttons_with_disabled_slots_and_editor_save_workflow(
         assert len(reloaded.buttons) == 11
         assert len(reloaded.active_buttons) == 7
         assert reloaded.buttons[6].description == "Neu aktiviert im Dialog"
+
+
+def test_trilingual_dictionary_completeness_and_vermutet_tag() -> None:
+    from playback_panel.i18n import COLOR_LABELS, STRINGS, tr
+
+    de_keys = set(STRINGS["de"].keys())
+    assert set(STRINGS["en"].keys()) == de_keys
+    assert set(STRINGS["ro"].keys()) == de_keys
+    assert set(COLOR_LABELS["de"]) == set(COLOR_LABELS["en"]) == set(COLOR_LABELS["ro"])
+
+    # CLAUDE.md rule: keep (vermutet) visible even in English and Romanian UI
+    assert "vermutet" in tr("de", "tag_vermutet")
+    assert "vermutet" in tr("en", "tag_vermutet")
+    assert "vermutet" in tr("ro", "tag_vermutet")
+
+
+def test_live_language_switching_de_en_ro_and_hidpi_button_fit(
+    tk_root: tk.Tk, tmp_path: Path
+) -> None:
+    from playback_panel.ui.theme import TactileButton, measure_text
+
+    # Simulate 150% Windows High-DPI (144 DPI -> tk scaling 2.0)
+    old_scaling = float(tk_root.tk.call("tk", "scaling"))
+    tk_root.tk.call("tk", "scaling", 2.0)
+    try:
+        cfg = default_starter_config(host="127.0.0.1", lang="de")
+        cfg.buttons.append(
+            ButtonConfig(
+                name="Sonderlicht",
+                playback=5,
+                on_label="HELL",
+                off_label="DUNKEL",
+            )
+        )
+        with PanelController(cfg, dry_run=True, app_data_dir=tmp_path) as ctrl:
+            app = PlaybackPanelApp(
+                tk_root,
+                ctrl,
+                settings=AppSettings(language="de"),
+                autostart=AutostartManager(backend=InMemoryRegistryBackend()),
+                app_data_dir=tmp_path,
+                enable_timers=False,
+            )
+            app.open_editor()
+            editor = app._editor_win
+            assert editor is not None
+
+            def _collect_tactile_buttons(widget: tk.Misc) -> list[TactileButton]:
+                found: list[TactileButton] = []
+                for child in widget.winfo_children():
+                    if isinstance(child, TactileButton):
+                        found.append(child)
+                    found.extend(_collect_tactile_buttons(child))
+                return found
+
+            for lang, expected_on, expected_off, expected_cfg_btn in (
+                ("de", "EIN", "AUS", "Konfigurieren"),
+                ("en", "ON", "OFF", "Configure"),
+                ("ro", "PORNIT", "OPRIT", "Configurare"),
+            ):
+                app.set_language(lang)
+                tk_root.update_idletasks()
+
+                assert app.lang == lang
+                assert editor.lang == lang
+                assert AppSettings.load(tmp_path).language == lang
+                assert app.btn_configure._text == expected_cfg_btn
+                assert app.cards[0].btn_on._text == expected_on
+                assert app.cards[0].btn_off._text == expected_off
+                # Custom labels must NOT be overwritten on language switch
+                assert app.cards[4].btn_on._text == "HELL"
+                assert app.cards[4].btn_off._text == "DUNKEL"
+
+                # Every TactileButton in both windows must be strictly wider than its rendered text
+                for win in (tk_root, editor):
+                    for btn in _collect_tactile_buttons(win):
+                        tw, _ = measure_text(btn, btn._font, btn._text)
+                        req_w = int(btn.cget("width"))
+                        assert req_w >= tw + 12, (
+                            f"Clipped button in lang={lang}: {btn._text!r} ({req_w} < {tw + 12})"
+                        )
+            editor.destroy()
+    finally:
+        tk_root.tk.call("tk", "scaling", old_scaling)

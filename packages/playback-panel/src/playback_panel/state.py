@@ -33,6 +33,7 @@ class AppSettings:
 
     last_config_path: str | None = None
     dry_run: bool = False
+    language: str = "de"
 
     @classmethod
     def load(cls, directory: Path | None = None) -> AppSettings:
@@ -46,19 +47,24 @@ class AppSettings:
             return cls()
         last_cfg = raw.get("last_config_path")
         dry_run = raw.get("dry_run", False)
+        lang_raw = raw.get("language", "de")
+        lang = lang_raw if isinstance(lang_raw, str) and lang_raw in ("de", "en", "ro") else "de"
         return cls(
             last_config_path=last_cfg if isinstance(last_cfg, str) and last_cfg else None,
             dry_run=bool(dry_run) if isinstance(dry_run, bool) else False,
+            language=lang,
         )
 
     def save(self, directory: Path | None = None) -> None:
         base = directory or default_app_data_dir()
+        lang = self.language if self.language in ("de", "en", "ro") else "de"
         try:
             base.mkdir(parents=True, exist_ok=True)
             settings_file = base / "settings.json"
             payload = {
                 "last_config_path": self.last_config_path,
                 "dry_run": self.dry_run,
+                "language": lang,
             }
             settings_file.write_text(
                 json.dumps(payload, indent=2, ensure_ascii=False) + "\n",

@@ -130,3 +130,10 @@ def test_pyinstaller_args_include_windowed_and_zeros_osc(tmp_path: Path) -> None
     assert "--windowed" in args
     assert "zeros_osc" in args
     assert "playback_panel" in args
+    assert "PIL.ImageDraw" in args
+
+
+def test_app_settings_persists_language_de_en_ro(tmp_path: Path) -> None:
+    s = AppSettings(language="ro")
+    s.save(tmp_path)
+    assert AppSettings.load(tmp_path).language == "ro"
