@@ -1,0 +1,42 @@
+name: Build FLX Playback-Panel (.exe)
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - "feat/playback-panel"
+      - "main"
+    tags:
+      - "v*"
+
+jobs:
+  build-windows-exe:
+    name: Windows Standalone .exe
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+
+      - name: Sync workspace and PyInstaller
+        run: uv sync --all-packages --extra build
+
+      - name: Build flx-panel.exe
+        run: uv run --package playback-panel --extra build flx-panel-build --console
+
+      - name: Smoke-test CLI check with console binary
+        run: .\dist\flx-panel.exe --check shows\playbacks.example.yaml
+
+      - name: Build windowed flx-panel.exe (no console window)
+        run: uv run --package playback-panel --extra build flx-panel-build
+
+      - name: Upload flx-panel.exe artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flx-panel-windows-exe
+          path: |
+            dist/flx-panel.exe
+            shows/playbacks.example.yaml

@@ -1,0 +1,29 @@
+[project]
+name = "playback-panel"
+version = "0.1.0"
+description = "Grafische Bedienoberfläche zum Schalten von Playbacks auf dem FLX S48 über OSC"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "zeros-osc",
+    "PyYAML>=6.0",
+]
+
+[project.optional-dependencies]
+build = [
+    "pyinstaller>=6.0",
+]
+
+[project.scripts]
+flx-panel = "playback_panel.cli:main"
+flx-panel-build = "playback_panel.build_exe:main"
+
+[project.gui-scripts]
+flx-panelw = "playback_panel.cli:main"
+
+[tool.uv.sources]
+zeros-osc = { workspace = true }
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"

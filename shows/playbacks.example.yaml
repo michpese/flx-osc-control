@@ -1,0 +1,67 @@
+# Beispiel-Konfiguration für das FLX Playback-Panel (Windows-Bedienoberfläche)
+#
+# Kopiere diese Datei nach shows/<anlass>.local.yaml oder öffne sie in flx-panel
+# und passe Pult-IP sowie Buttons direkt über die Oberfläche („Konfigurieren“) an.
+#
+# Es können bis zu 12 Playbacks/Buttons angelegt werden; im Bedienfenster werden
+# immer nur die tatsächlich aktiven Einträge angezeigt (hier 4 Stück).
+# Erlaubte OSC-Adressen: docs/02-flx-osc-referenz.md
+
+title: "Kleines Event - Lichtsteuerung"
+
+console:
+  host: 192.168.1.10      # IP-Adresse des FLX S48
+  port: 8830              # "Receive Port Number" am Pult (Standard 8830)
+  transport: udp          # udp (Standard) oder tcp-slip
+
+ui:
+  start_locked: false     # true = startet gesperrt im reinen Bedienmodus
+  always_on_top: false    # true = Fenster bleibt immer im Vordergrund
+  window_mode: normal     # normal | maximized | fullscreen
+  show_all_off: true      # Sammelbutton "Alle Aus" in der Kopfzeile einblenden
+  startup_delay_s: 2.0    # Wartezeit vor automatischen Start-Befehlen (Sekunden)
+
+buttons:
+  # 1. Standard-Modus (playback_level):
+  #    EIN schaltet Playback 1 auf 100 %, AUS schaltet dasselbe Playback 1 auf 0 %.
+  - id: pb_front
+    name: "Bühne Grundlicht"
+    description: "Warmweißes Frontlicht für Moderation und Redner"
+    color: amber
+    mode: playback_level
+    playback: 1
+    on_level: 100
+    off_level: 0
+    fade: 1.5
+
+  # 2. Gedimmter Playback-Wert (off_level ist optional und fällt automatisch auf 0 zurück):
+  - id: pb_atmo
+    name: "Hintergrund Ambiente"
+    description: "LED-Bars an der Rückwand sanft auf 70 %"
+    color: blue
+    mode: playback_level
+    playback: 2
+    on_level: 70
+    fade: 2
+
+  # 3. Saallicht (optional mit auto_on_at_startup: true beim PC-Start einschaltbar):
+  - id: pb_hall
+    name: "Saallicht"
+    description: "Publikumsbeleuchtung für Einlass und Pause"
+    color: emerald
+    mode: playback_level
+    playback: 3
+    on_level: 100
+    off_level: 0
+    fade: 3
+    auto_on_at_startup: false
+
+  # 4. Cue-Paar-Modus (nutzt den am FLX S48 bestätigten Befehl /zeros/cue/go/<pb>/<cue>):
+  - id: cue_musik
+    name: "Musik-Szene"
+    description: "Startet Cue 1 (Ein) bzw. Cue 2 (Aus) auf Playback 10"
+    color: violet
+    mode: cue_pair
+    playback: 10
+    on_cue: 1
+    off_cue: 2
