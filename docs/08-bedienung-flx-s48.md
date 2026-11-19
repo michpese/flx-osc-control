@@ -52,7 +52,7 @@ Die Playback-Nummer ist die Fader-Nummer: Playback 10 liegt auf Fader 10 der ers
 | `@ .` | ausgewählte Geräte auf 0 % |
 | `Enter Enter` | alle Geräte über 0 % auswählen |
 
-Farbe, Beam und Position stellst du über die Attribut-Tabs am Touchscreen und die Encoder ein. Mit mehreren Fingern auf Farbwähler oder Pan/Tilt-Raster fächerst du Werte auf: erster und letzter Finger bestimmen erstes und letztes Gerät.
+Farbe (**Colour**), Strahl/Optik (**Beam** bzw. ab ZerOS 7.9.8 getrennt in **Beam** und **Shape**), **Position** und **Effect** stellst du über die Attribut-Tabs am Touchscreen und die Encoder ein. Mit mehreren Fingern auf Farbwähler oder Pan/Tilt-Raster fächerst du Werte auf: erster und letzter Finger bestimmen erstes und letztes Gerät.
 
 ## Gruppen
 
@@ -115,7 +115,35 @@ So nennt es der Hersteller-Support im Forum für FLX-S-Pulte. Mit einer USB-Tast
 
 ### Playback ansehen
 
-**View** halten und die Taste des Playbacks antippen. Das Playback-Fenster zeigt dann dessen Cue-Liste mit Nummern, Namen und Zeiten. Viele Aktionen wie **Update** und das Ändern von Zeiten wirken auf das gerade angezeigte Playback, deshalb zuerst das richtige anzeigen.
+**View** halten und die Taste des Playbacks antippen (bzw. **►** für das Master Playback). Das Fenster heißt in älteren Handbüchern **Playback-Fenster** und in neueren ZerOS-Versionen **Cues-Fenster** (*Cues Window*). Ohne externen Monitor wechselst du durch kurzes Tippen auf **View** am internen Touchscreen zwischen *Faders*- (Fader-/Playback-Übersicht) und *Cues*-/Playback-Fenster.
+
+Viele Aktionen wie **Update** und das Ändern von Zeiten wirken auf das gerade angezeigte Playback, deshalb zuerst das richtige anzeigen.
+
+- **Grüner Balken:** aktuell aktiver (ausgegebener) Cue.
+- **Gelber Balken:** nächster Cue (wird beim nächsten **Go** aktiv; per Antippen auf eine Zeile wählst du einen Cue gelb vor).
+
+### Begriffe und Spalten im Playback-/Cues-Fenster
+
+Jede Zeile ist ein Cue, die Spalten zeigen Nummer, Auslöser, Überblendzeiten pro Attributgruppe und Cue-Optionen (auf dem internen Touchscreen ggf. seitlich scrollen; Details zu Trigger, Next, Don't Move on Dark und Macros liegen gebündelt auch hinter **Settings**):
+
+| Spalte / Begriff | Bedeutung |
+| --- | --- |
+| **Cue / Number** | Eindeutige Cue-Nummer (auch Zwischenwerte wie `1.5` zum Einschieben). Cue `1` hat ab Werk `0 s` Intensitäts-Fade, damit die Helligkeit direkt dem Fader folgt |
+| **Name** | Optionaler Name des Cues (hilft bei der Zuordnung in der Show und zu OSC-Triggern) |
+| **Trigger** | Auslöser des Cues: **Go** (Standard, wartet auf Go-Taste oder OSC), **Auto with previous cue** oder **Auto after previous cue** |
+| **Wait** | Wartezeit (*Wait Time*) vor dem Start bei automatischen *Auto*-Triggern (bei **Go** ungenutzt) |
+| **Fade Up** | Einblendzeit in Sekunden für **Intensitäten** (Helligkeit/Dimmer), die in diesem Cue *ansteigen* (Standard ab Cue 2: `3 s`) |
+| **Fade Down** | Ausblendzeit in Sekunden für **Intensitäten**, die *sinken* (Standard ab Cue 2: `3 s`; läuft zeitgleich mit *Fade Up*, aber unabhängig einstellbar) |
+| **Colour** | Überblendzeit für **Farbparameter** (RGB/CMY, White/Amber/UV, Farbtemperatur CTC, Farbrad; Standard: `3 s`). Feste Farbräder schalten meist stufenweise |
+| **Beam** | Überblendzeit für **Strahl- und Gerätesteuerparameter** – z. B. **Shutter/Strobe, Fokus (Schärfe), Zoom (Abstrahlwinkel), Iris, Frost** sowie Lüfter-/Reset-/Steuerkanäle (Standard ab ZerOS 7.9.8: `0 s`, damit Shutter oder Steuerkanäle nicht langsam Zwischenwerte durchfahren) |
+| **Shape** | *(ab ZerOS 7.9.8 / ZerOS 8.0.x eigene Spalte)* Überblendzeit für **strahlformende Muster und Optik** – z. B. **Gobos/Gobo-Räder, Gobo-Rotation, Prisma/Prismarotation** sowie ggf. Blendenschieber (Standard: `0 s`). Vor ZerOS 7.9.8 unter **Beam** bzw. **Beamshape** zusammengefasst |
+| **Position** | Überblendzeit für **Bewegung / Ausrichtung** von Moving Lights (**Pan**, **Tilt**, ggf. *Pan/Tilt Speed*; Standard: `3 s`) |
+| **Next** | Ziel-Cue nach diesem Cue (leer = normal der Reihe nach zum nächsten Cue) |
+| **Macros** | Verknüpfte Playback-Macros, die beim Erreichen des Cues automatisch **andere Playbacks** starten (*Trigger*) oder beenden (*Release*) |
+| **Settings** | Taste in der Cue-Zeile — öffnet **Cue Setup** (siehe [Cue-Einstellungen](#cue-einstellungen)) |
+
+- **Verzögerung `(D: …)` (Delay):** Steht in einer Zeitspalte ein Wert in Klammern wie `(D: 2.0)`, wartet dieses Attribut nach dem Auslösen zuerst so viele Sekunden, bevor die eigentliche Fade-Zeit startet (z. B. alte Scheinwerfer erst ausblenden, neue verzögert einblenden).
+- **Effect (Attribut-Tab, keine eigene Zeitspalte):** Im Programmier- und Paletten-Bereich gibt es zusätzlich **Effect** (automatische Effekte wie *Circle*, *Rainbow*, *Figure 8* mit *Speed*, *Size*, *Offset*, *Rotation*). Effekt-Größe und -Geschwindigkeit blenden beim Start eines Cues bzw. mit dem Playback-Fader ein und aus.
 
 ### Record-Fenster
 
@@ -131,8 +159,8 @@ So nennt es der Hersteller-Support im Forum für FLX-S-Pulte. Mit einer USB-Tast
 
 ## Zeiten nachträglich ändern
 
-1. Im Playback-Fenster die Zeitzelle des Cues antippen.
-2. Mit den Encodern ändern oder mit der mittleren Encodertaste exakt eintippen.
+1. Im Playback-/Cues-Fenster die gewünschte Zeitzelle des Cues antippen (**Fade Up**, **Fade Down**, **Colour**, **Beam**, **Shape** oder **Position**).
+2. Mit den Encodern ändern (1 Raster-Klick = 1 s) oder mit der mittleren Encodertaste exakt eintippen (z. B. `1.5`). Tipp: Bei **Fade Up** / **Fade Down** ändert Encoder 1 zunächst beide gemeinsam (**Fade**), über Encoder 3 (**Fade Down**) trennst du sie; daneben lässt sich auch ein **Delay** einstellen.
 
 Für die Fernsteuerung gilt: **Die Zeit gehört in den Cue, nicht in den Trigger** (siehe `docs/03`).
 
@@ -357,7 +385,9 @@ Laden überschreibt alles am Pult. Vorher die aktuelle Show sichern. **Load Comp
 - [FLX S Bedienungsanleitung (deutsch, ZerOS 7.9.3)](https://images.static-thomann.de/pics/atg/atgdata/document/manual/zero88_flx_s_de.pdf)
 - [ZerOS 8.0.1 Release Notes](https://vari-lite.s3.eu-west-1.amazonaws.com/graphics/technical/documents/ZerOS-8.0.1-release-notes.pdf)
 - [ZerOS-Handbuch: Macros](https://www.zero88.com/manuals/zeros/macros)
+- [ZerOS-Handbuch: Cue Times (PDF-Auszug)](https://manuals.plus/m/411263d18c7fc5bb0daa2d761f9bc1e8e7e6bd9b85ae98795d38f5b0efcf9583), zu Standard-Fadezeiten, Beam/Shape-Spalten und `(D: …)`-Delays
 - [ZerOS-Handbuch als PDF](https://www.zero88.com/storage/downloads/manuals/zeros-en.pdf), für „View halten und Playback-Taste"
+- [Zero 88 Forum: ZerOS 7.9.7 / 7.9.8 (Beam & Shape)](https://www.zero88.com/forum/topic/9001-zeros-79724-public-beta/), zur Aufteilung von *Beamshape* in *Beam* und *Shape*
 - [Zero 88 Forum: Record a Cue with a Defined Number](https://www.zero88.com/forum/topic/8360-record-a-cue-with-a-defined-number/), Antwort des Hersteller-Supports
 - [Zero 88 Forum: FLX S24, new users](https://www.zero88.com/forum/topic/11976-flx-s24-new-users-being-driven-nuts/), Cue-Nummer über Record und Z
 - Anwender-Leitfaden „FLX S48 User Booklet, ZerOS 8" aus dem Zero 88 Forum, für die Rückfrage beim Aufnehmen auf ein belegtes Playback
