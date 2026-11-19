@@ -69,7 +69,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--autostart",
         choices=("status", "enable", "disable"),
-        help="Windows-Autostart abfragen, aktivieren oder deaktivieren und beenden",
+        help="System-Autostart (Windows / Linux) abfragen, aktivieren oder deaktivieren",
     )
     return parser
 
@@ -101,7 +101,7 @@ def _handle_autostart(
 ) -> int:
     if action == "status":
         if not autostart.supported:
-            print("Autostart: nicht unterstützt (nur unter Windows verfügbar)", file=out)
+            print("Autostart: nicht unterstützt (nur unter Windows und Linux verfügbar)", file=out)
             return 0
         cmd = autostart.current_command()
         if cmd:

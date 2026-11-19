@@ -58,7 +58,9 @@ def build_pyinstaller_args(
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="flx-panel-build",
-        description="Baut eine eigenständige Programmdatei (unter Windows: flx-panel.exe).",
+        description=(
+            "Baut eine eigenständige Einzeldatei (Windows: flx-panel.exe, Linux: flx-panel)."
+        ),
     )
     parser.add_argument(
         "--dist-dir",
@@ -73,7 +75,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser.add_argument(
         "--name",
         default="flx-panel",
-        help="Dateiname ohne Endung (Standard: flx-panel -> flx-panel.exe)",
+        help="Dateiname ohne Endung (Standard: flx-panel)",
     )
     parser.add_argument(
         "--console",
@@ -108,6 +110,8 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     suffix = ".exe" if sys.platform == "win32" else ""
     output_bin = dist_dir / f"{args.name}{suffix}"
+    if sys.platform != "win32" and output_bin.exists():
+        output_bin.chmod(0o755)
     print(f"Erfolgreich gebaut: {output_bin}")
     return 0
 

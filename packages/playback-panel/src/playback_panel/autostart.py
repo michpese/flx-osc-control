@@ -1,26 +1,33 @@
-"""Windows Autostart integration (HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run).
+"""Cross-platform Autostart integration for Windows and Linux.
 
-Uses only standard-library ``winreg`` on Windows (no administrator rights needed).
-On non-Windows platforms or in unit tests, a custom ``RegistryBackend`` can be injected.
+* **Windows**: ``HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Run`` via standard-library
+  ``winreg`` (no administrator rights needed).
+* **Linux**: Freedesktop XDG Autostart ``~/.config/autostart/<name>.desktop``
+  (respecting ``$XDG_CONFIG_HOME``, no root rights needed; supported by GNOME, KDE Plasma,
+  XFCE, Cinnamon, MATE, LXQt, Raspberry Pi OS, etc.).
+* **Tests / Unsupported OS**: ``InMemoryRegistryBackend`` or ``UnsupportedRegistryBackend``.
 """
 
 from __future__ import annotations
 
+import os
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 from typing import Protocol
 
 RUN_KEY_PATH = r"Software\Microsoft\Windows\CurrentVersion\Run"
 DEFAULT_ENTRY_NAME = "FLXPlaybackPanel"
+_XDG_RESERVED_CHARS = frozenset(" \t\n\"'\\><~|&;$*?#()`")
 
 
 class AutostartNotSupportedError(OSError):
-    """Raised when Windows Registry autostart is requested on a non-Windows OS."""
+    """Raised when autostart is requested on an unsupported operating system."""
 
 
 class RegistryBackend(Protocol):
-    """Minimal key-value interface for the Windows Run registry key."""
+    """Minimal key-value interface for per-user autostart storage."""
 
     @property
     def supported(self) -> bool: ...
@@ -51,7 +58,7 @@ class InMemoryRegistryBackend:
 
 
 class UnsupportedRegistryBackend:
-    """Fallback backend on macOS and Linux."""
+    """Fallback backend on operating systems without configured autostart support."""
 
     supported = False
 
@@ -60,12 +67,12 @@ class UnsupportedRegistryBackend:
 
     def set_value(self, name: str, command: str) -> None:
         raise AutostartNotSupportedError(
-            "Windows-Autostart (Registry) ist nur unter Windows verfügbar."
+            "System-Autostart ist nur unter Windows und Linux verfügbar."
         )
 
     def delete_value(self, name: str) -> None:
         raise AutostartNotSupportedError(
-            "Windows-Autostart (Registry) ist nur unter Windows verfügbar."
+            "System-Autostart ist nur unter Windows und Linux verfügbar."
         )
 
 
@@ -106,9 +113,107 @@ class WindowsRegistryBackend:
             pass
 
 
+def default_xdg_autostart_dir() -> Path:
+    """Return ``$XDG_CONFIG_HOME/autostart`` or ``~/.config/autostart``."""
+    xdg = os.environ.get("XDG_CONFIG_HOME")
+    base = Path(xdg) if xdg else (Path.home() / ".config")
+    return base / "autostart"
+
+
+def format_desktop_exec(argv: list[str]) -> str:
+    """Format ``argv`` according to the Freedesktop Desktop Entry ``Exec=`` specification."""
+    parts: list[str] = []
+    for raw in argv:
+        arg = raw.replace("%", "%%")
+        if not arg or any(ch in _XDG_RESERVED_CHARS for ch in arg):
+            escaped = (
+                arg.replace("\\", "\\\\")
+                .replace('"', '\\"')
+                .replace("`", "\\`")
+                .replace("$", "\\$")
+            )
+            parts.append(f'"{escaped}"')
+        else:
+            parts.append(arg)
+    return " ".join(parts)
+
+
+class XdgAutostartBackend:
+    """Linux Freedesktop XDG Autostart backend (``~/.config/autostart/*.desktop``)."""
+
+    supported = True
+
+    def __init__(self, autostart_dir: Path | None = None) -> None:
+        self._dir = autostart_dir
+
+    def _target_dir(self) -> Path:
+        return self._dir if self._dir is not None else default_xdg_autostart_dir()
+
+    def desktop_file_path(self, name: str) -> Path:
+        slug = "".join(ch.lower() if ch.isalnum() else "-" for ch in name).strip("-")
+        if not slug:
+            slug = "flx-playback-panel"
+        return self._target_dir() / f"{slug}.desktop"
+
+    def get_value(self, name: str) -> str | None:
+        path = self.desktop_file_path(name)
+        try:
+            lines = path.read_text(encoding="utf-8").splitlines()
+        except (OSError, UnicodeDecodeError):
+            return None
+
+        exec_cmd: str | None = None
+        for raw_line in lines:
+            line = raw_line.strip()
+            if not line or line.startswith("#"):
+                continue
+            low = line.lower()
+            if low == "hidden=true" or low == "x-gnome-autostart-enabled=false":
+                return None
+            if line.startswith("Exec="):
+                val = line[len("Exec=") :].strip()
+                if val:
+                    exec_cmd = val.replace("%%", "%")
+        return exec_cmd
+
+    def set_value(self, name: str, command: str) -> None:
+        path = self.desktop_file_path(name)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        exec_line = command.replace("%", "%%")
+        content = (
+            "[Desktop Entry]\n"
+            "Type=Application\n"
+            "Version=1.0\n"
+            "Name=FLX Playback-Panel\n"
+            "Comment=Zero 88 FLX S48 OSC Playback Control\n"
+            f"Exec={exec_line}\n"
+            "Terminal=false\n"
+            "Categories=AudioVideo;Lighting;\n"
+            "X-GNOME-Autostart-enabled=true\n"
+        )
+        fd, tmp_name = tempfile.mkstemp(
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            dir=str(path.parent),
+        )
+        tmp_path = Path(tmp_name)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as fh:
+                fh.write(content)
+            os.replace(tmp_path, path)
+        except BaseException:
+            tmp_path.unlink(missing_ok=True)
+            raise
+
+    def delete_value(self, name: str) -> None:
+        self.desktop_file_path(name).unlink(missing_ok=True)
+
+
 def default_registry_backend() -> RegistryBackend:
     if sys.platform == "win32":
         return WindowsRegistryBackend()
+    if sys.platform.startswith("linux"):
+        return XdgAutostartBackend()
     return UnsupportedRegistryBackend()
 
 
@@ -118,21 +223,22 @@ def build_autostart_command(
     executable: str | Path | None = None,
     frozen: bool | None = None,
     extra_args: list[str] | None = None,
+    platform: str | None = None,
 ) -> str:
-    """Build a properly quoted Windows command line for autostart.
-
-    When running as a PyInstaller ``.exe`` (``sys.frozen`` is truthy), launches the
-    executable directly. When running from Python, invokes ``pythonw.exe -m playback_panel``
-    if ``pythonw.exe`` sits next to ``python.exe``, otherwise ``sys.executable -m playback_panel``.
-    """
+    """Build a properly quoted command line for Windows Registry or Linux XDG Autostart."""
     is_frozen = getattr(sys, "frozen", False) if frozen is None else frozen
     exe = Path(executable) if executable is not None else Path(sys.executable)
+    target_platform = platform if platform is not None else sys.platform
+    is_windows_cmd = target_platform == "win32" or exe.suffix.lower() == ".exe"
 
     if is_frozen:
         argv = [str(exe.resolve())]
     else:
-        pythonw = exe.with_name("pythonw.exe")
-        runner = pythonw if exe.name.lower() == "python.exe" and pythonw.exists() else exe
+        if is_windows_cmd:
+            pythonw = exe.with_name("pythonw.exe")
+            runner = pythonw if exe.name.lower() == "python.exe" and pythonw.exists() else exe
+        else:
+            runner = exe
         argv = [str(runner), "-m", "playback_panel"]
 
     if config_path is not None:
@@ -140,11 +246,13 @@ def build_autostart_command(
     if extra_args:
         argv += list(extra_args)
 
-    return subprocess.list2cmdline(argv)
+    if is_windows_cmd:
+        return subprocess.list2cmdline(argv)
+    return format_desktop_exec(argv).replace("%%", "%")
 
 
 class AutostartManager:
-    """Read, enable or disable per-user Windows Autostart for ``flx-panel``."""
+    """Read, enable or disable per-user Autostart (Windows Registry / Linux XDG)."""
 
     def __init__(
         self,

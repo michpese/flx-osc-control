@@ -226,16 +226,16 @@ STRINGS: dict[LanguageCode, dict[str, str]] = {
         "wm_maximized": "Maximiert",
         "wm_fullscreen": "Vollbild (Kiosk)",
         "lbl_startup_delay": "Start-Verzögerung (Sek.)",
-        "sec_autostart": "Windows-Autostart",
+        "sec_autostart": "System-Autostart (Windows & Linux)",
         "desc_autostart": (
-            "Startet das FLX Playback-Panel automatisch nach der Windows-Anmeldung "
-            "(aktueller Benutzer unter HKCU\\...\\Run, keine Administratorrechte nötig) "
-            "und lädt direkt die gespeicherte Konfigurationsdatei."
+            "Startet das FLX Playback-Panel automatisch nach der Benutzer-Anmeldung "
+            "(unter Windows via HKCU\\...\\Run, unter Linux via ~/.config/autostart/*.desktop - "
+            "keine Administrator-/Root-Rechte nötig) und lädt direkt die gespeicherte Datei."
         ),
-        "chk_autostart": "Mit Windows automatisch starten (Autostart aktivieren)",
+        "chk_autostart": "Beim Anmelden automatisch starten (Autostart aktivieren)",
         "autostart_unsupported": (
-            "Hinweis: Auf diesem System nicht aktiv (Windows-Registry-Autostart steht "
-            "unter Windows bereit).\nGeplanter Startbefehl: {cmd}"
+            "Hinweis: Auf diesem System nicht unterstützt (verfügbar unter Windows und Linux).\n"
+            "Geplanter Startbefehl: {cmd}"
         ),
         "autostart_active": "AKTIV (wird beim Speichern gesetzt)",
         "autostart_inactive": "INAKTIV",
@@ -421,15 +421,15 @@ STRINGS: dict[LanguageCode, dict[str, str]] = {
         "wm_maximized": "Maximized",
         "wm_fullscreen": "Fullscreen (Kiosk)",
         "lbl_startup_delay": "Startup delay (sec)",
-        "sec_autostart": "Windows Autostart",
+        "sec_autostart": "System Autostart (Windows & Linux)",
         "desc_autostart": (
-            "Launches FLX Playback-Panel automatically when signing in to Windows "
-            "(current user under HKCU\\...\\Run, no admin rights required) "
-            "and loads the saved configuration file."
+            "Launches FLX Playback-Panel automatically after user login "
+            "(on Windows via HKCU\\...\\Run, on Linux via ~/.config/autostart/*.desktop - "
+            "no admin/root rights required) and loads the saved configuration file."
         ),
-        "chk_autostart": "Launch automatically with Windows (enable Autostart)",
+        "chk_autostart": "Launch automatically on login (enable Autostart)",
         "autostart_unsupported": (
-            "Note: Inactive on this OS (Windows Registry Autostart is available on Windows).\n"
+            "Note: Not supported on this OS (available on Windows and Linux).\n"
             "Planned launch command: {cmd}"
         ),
         "autostart_active": "ENABLED (applied on save)",
@@ -616,16 +616,16 @@ STRINGS: dict[LanguageCode, dict[str, str]] = {
         "wm_maximized": "Maximizată",
         "wm_fullscreen": "Ecran complet (Kiosk)",
         "lbl_startup_delay": "Întârziere la pornire (sec)",
-        "sec_autostart": "Autostart Windows",
+        "sec_autostart": "Autostart Sistem (Windows & Linux)",
         "desc_autostart": (
-            "Pornește automat FLX Playback-Panel după autentificarea în Windows "
-            "(utilizatorul curent în HKCU\\...\\Run, fără drepturi de administrator) "
-            "și încarcă direct fișierul de configurare salvat."
+            "Pornește automat FLX Playback-Panel după autentificarea utilizatorului "
+            "(pe Windows în HKCU\\...\\Run, pe Linux în ~/.config/autostart/*.desktop - "
+            "fără drepturi de administrator/root) și încarcă direct fișierul de configurare salvat."
         ),
-        "chk_autostart": "Pornește automat odată cu Windows (activează Autostart)",
+        "chk_autostart": "Pornește automat la autentificare (activează Autostart)",
         "autostart_unsupported": (
-            "Notă: Inactiv pe acest sistem (Autostart prin Windows Registry este disponibil "
-            "pe Windows).\nComandă planificată: {cmd}"
+            "Notă: Nesuportat pe acest sistem (disponibil pe Windows și Linux).\n"
+            "Comandă planificată: {cmd}"
         ),
         "autostart_active": "ACTIV (se aplică la salvare)",
         "autostart_inactive": "INACTIV",

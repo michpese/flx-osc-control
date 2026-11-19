@@ -1,4 +1,4 @@
-name: Build FLX Playback-Panel (.exe)
+name: Build FLX Playback-Panel (Windows & Linux)
 
 on:
   workflow_dispatch:
@@ -24,7 +24,7 @@ jobs:
       - name: Sync workspace and PyInstaller
         run: uv sync --all-packages --extra build
 
-      - name: Build flx-panel.exe
+      - name: Build flx-panel.exe (console check)
         run: uv run --package playback-panel --extra build flx-panel-build --console
 
       - name: Smoke-test CLI check with console binary
@@ -39,4 +39,42 @@ jobs:
           name: flx-panel-windows-exe
           path: |
             dist/flx-panel.exe
+            shows/playbacks.example.yaml
+
+  build-linux-binary:
+    name: Linux Standalone (x86_64)
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install system Python 3.11 with Xft Tkinter & Xvfb
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3.11 python3.11-venv python3.11-dev python3-tk xvfb
+
+      - uses: astral-sh/setup-uv@v6
+
+      - name: Build standalone dist/flx-panel binary
+        run: bash packages/playback-panel/scripts/build_linux.sh
+
+      - name: Smoke-test CLI & XDG autostart status under Xvfb
+        run: |
+          xvfb-run -a ./dist/flx-panel --check shows/playbacks.example.yaml
+          ./dist/flx-panel --autostart status
+
+      - name: Package tar.gz (preserves chmod +x permissions)
+        run: |
+          mkdir -p dist/flx-panel-linux-x86_64
+          cp dist/flx-panel dist/flx-panel-linux-x86_64/
+          cp shows/playbacks.example.yaml dist/flx-panel-linux-x86_64/
+          chmod +x dist/flx-panel-linux-x86_64/flx-panel
+          tar -C dist -czf dist/flx-panel-linux-x86_64.tar.gz flx-panel-linux-x86_64
+
+      - name: Upload Linux standalone artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: flx-panel-linux-x86_64
+          path: |
+            dist/flx-panel
+            dist/flx-panel-linux-x86_64.tar.gz
             shows/playbacks.example.yaml

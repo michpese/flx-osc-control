@@ -137,3 +137,31 @@ def test_app_settings_persists_language_de_en_ro(tmp_path: Path) -> None:
     s = AppSettings(language="ro")
     s.save(tmp_path)
     assert AppSettings.load(tmp_path).language == "ro"
+
+
+def test_linux_xdg_autostart_desktop_entry_roundtrip(tmp_path: Path) -> None:
+    from playback_panel.autostart import XdgAutostartBackend
+
+    autostart_dir = tmp_path / "autostart"
+    backend = XdgAutostartBackend(autostart_dir=autostart_dir)
+    mgr = AutostartManager(backend=backend)
+    assert mgr.supported
+    assert not mgr.is_enabled()
+
+    bin_path = tmp_path / "opt" / "flx panel" / "flx-panel"
+    cfg_path = tmp_path / "Meine Shows" / "event 100%.yaml"
+    written = mgr.enable(config_path=cfg_path, executable=bin_path, frozen=True)
+
+    desktop_file = backend.desktop_file_path(mgr.entry_name)
+    assert desktop_file.exists()
+    raw_desktop = desktop_file.read_text(encoding="utf-8")
+    assert "[Desktop Entry]" in raw_desktop
+    assert "Type=Application" in raw_desktop
+    assert "%%" in raw_desktop  # literal % escaped per Freedesktop Desktop Entry spec
+    assert mgr.is_enabled()
+    assert mgr.current_command() == written
+    assert "event 100%.yaml" in (mgr.current_command() or "")
+
+    mgr.disable()
+    assert not desktop_file.exists()
+    assert not mgr.is_enabled()
