@@ -38,6 +38,7 @@ Direkt auf der Folie geht es auch: Rechtsklick auf die Folie → Add Action → 
 - **Kein Note Off nötig.** Die Bridge reagiert nur auf Note On.
 - **Wiederholtes Anklicken.** Jeder Klick auf die Folie sendet erneut. Die Bridge unterdrückt Wiederholungen innerhalb von `debounce_ms`.
 - **Doppeltes Auslösen.** Steuert Ableton die Folien und tragen diese Folien Licht-Makros, löst derselbe Moment zweimal aus. Siehe [05-setup-ableton.md](05-setup-ableton.md).
+- **Empfang von Ableton (Mac) über das Netzwerk.** Soll ProPresenter auf Windows per Netzwerk-MIDI (RTP-MIDI) vom Ableton-Mac gesteuert werden, folgt die komplette Einrichtung Schritt für Schritt in [10-midi-netzwerk-ableton-propresenter.md](10-midi-netzwerk-ableton-propresenter.md).
 
 ## Weg B und C: Netzwerkzugriff einschalten
 

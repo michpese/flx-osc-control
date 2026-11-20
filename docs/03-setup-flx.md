@@ -7,7 +7,7 @@ Vor dem ersten Trigger brauchst du drei Dinge: ein sauberes Netz, das eingeschal
 1. Stelle einen eigenen Switch nur für Licht und Zuspieler auf. ZerOS-Pulte sind für ein eigenständiges lokales Netz gedacht, ohne Internet.
 2. Verbinde Pult und Rechner per Kabel. Kein WLAN im Signalweg.
 3. Vergib feste Adressen nach dem Plan unten.
-4. Erlaube in der Firewall der Rechner ausgehendes UDP auf Port 8830.
+4. Erlaube in der Firewall der Rechner ausgehendes UDP auf Port 8830 (für Netzwerk-MIDI zwischen Mac und Windows zusätzlich UDP 5004 und 5005, siehe [10-midi-netzwerk-ableton-propresenter.md](10-midi-netzwerk-ableton-propresenter.md)).
 5. Prüfe die Verbindung mit `ping 192.168.1.10` vom Rechner zum Pult.
 
 | Gerät | IP-Adresse (Vorschlag) | Subnetz |

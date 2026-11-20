@@ -31,7 +31,7 @@ Voraussetzung: Der virtuelle MIDI-Port „LX Bridge" existiert, siehe [03-setup-
 ## Stolperfallen
 
 - **Eine Quelle pro Lichtwechsel.** Steuert Ableton bereits die Folien in ProPresenter und tragen diese Folien Licht-Makros, löst derselbe Moment zweimal aus. Lege pro Song fest, ob Ableton oder ProPresenter das Licht führt.
-- **Zwei Rechner.** Ableton läuft auf einem Mac, ProPresenter auf einem Windows-PC. Die Bridge startet auf beiden Rechnern mit derselben `mapping.yaml`. UDP erlaubt mehrere Absender.
+- **Zwei Rechner.** Ableton läuft auf einem Mac, ProPresenter auf einem Windows-PC. Die Bridge startet auf beiden Rechnern mit derselben `mapping.yaml`. UDP erlaubt mehrere Absender. Soll der Ableton-Mac als Haupt-PC das Licht lokal per `midi-bridge` in OSC wandeln und zusätzlich ProPresenter auf Windows per Netzwerk-MIDI (RTP-MIDI) steuern, siehe [10-midi-netzwerk-ableton-propresenter.md](10-midi-netzwerk-ableton-propresenter.md).
 - **Stopp und Sprung.** Springt jemand im Song, fehlen die übersprungenen Noten. Setze an jeden Song-Anfang und jede Sprungmarke eine Note für die dort gültige Stimmung.
 - **Notennamen.** Rechne mit der Notennummer 0–127. Die Anzeige als Notenname unterscheidet sich zwischen Programmen um eine Oktave.
 - **Schleifen.** Ein geloopter Clip sendet seine Note bei jedem Durchlauf. Die Sperrzeit `debounce_ms` hilft nur bei kurzen Abständen.
