@@ -46,6 +46,7 @@ Warum der Umweg über MIDI? Das Pult empfängt OSC, aber ProPresenter kann kein 
 | [07-betrieb-checkliste.md](docs/07-betrieb-checkliste.md) | Start-Checkliste und Notfallplan für den Einsatz |
 | [08-bedienung-flx-s48.md](docs/08-bedienung-flx-s48.md) | Bedienung des Pults: Cues aufnehmen, Steuer-Playback einrichten, Showfiles |
 | [09-scheinwerfer-einstellung.md](docs/09-scheinwerfer-einstellung.md) | Scheinwerfer einstellen (Performer 2000 RGBAL & Flat Pro 12), Dimmerkurven, IP vs. DMX |
+| [10-midi-netzwerk-ableton-propresenter.md](docs/10-midi-netzwerk-ableton-propresenter.md) | Ableton (Mac) als Haupt-PC: Licht lokal per OSC und ProPresenter (Windows) über Netzwerk-MIDI (RTP-MIDI) steuern |
 
 ## Die Programme
 
