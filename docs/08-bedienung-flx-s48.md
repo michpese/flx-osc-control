@@ -330,6 +330,8 @@ Auf einem leeren Playback kannst du über **Setup** + Taste den Fader auch als G
 | Gerät doppelt adressieren | „Add as additional address" |
 | Gerät löschen | Geräte wählen, **Delete**, **OK**. Entfernt es auch aus Cues, Gruppen und Paletten |
 
+Einstellungen direkt an euren Scheinwerfern (**Performer 2000 RGBAL** und **Cameo Flat Pro 12**) sowie Tipps gegen stufige Fades stehen Schritt für Schritt in [09-scheinwerfer-einstellung.md](09-scheinwerfer-einstellung.md).
+
 ## Showfile speichern, laden, Pult leeren
 
 **Speichern**
